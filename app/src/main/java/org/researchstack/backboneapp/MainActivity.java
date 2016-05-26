@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 import org.researchstack.backbone.StorageAccess;
 import org.researchstack.backbone.answerformat.AnswerFormat;
@@ -46,6 +47,9 @@ import java.util.Collections;
 
 public class MainActivity extends PinCodeActivity
 {
+
+    private static final String LOG_TAG = "SDL-RSX";
+
     // Activity Request Codes
     private static final int REQUEST_CONSENT = 0;
     private static final int REQUEST_SURVEY  = 1;
@@ -76,10 +80,12 @@ public class MainActivity extends PinCodeActivity
     // Views
     private AppCompatButton consentButton;
     private AppCompatButton surveyButton;
+    private AppCompatButton pamButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -105,6 +111,16 @@ public class MainActivity extends PinCodeActivity
             public void onClick(View v)
             {
                 launchSurvey();
+            }
+        });
+
+        pamButton = (AppCompatButton) findViewById(R.id.pam_button);
+        pamButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                launchPAM();
             }
         });
     }
@@ -428,5 +444,11 @@ public class MainActivity extends PinCodeActivity
         }
 
         surveyAnswer.setText(results);
+    }
+
+    private void launchPAM()
+    {
+        Log.d(LOG_TAG, "Launching PAM");
+
     }
 }
