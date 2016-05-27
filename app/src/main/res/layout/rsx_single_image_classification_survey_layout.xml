@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rsx_single_image_classification_survey_content_container"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.researchstack.backboneapp.MainActivity"
+    >
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/rsx_single_image_classification_survey_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/rsx_single_image_classification_item_description_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Activity Description"
+            android:gravity="center"
+            android:textSize="30sp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/rsx_single_image_classification_question_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How hard was this activity for you today?"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:textColor="@color/black"/>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/rsx_single_image_classification_button_container_view"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/colorAccent">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
+

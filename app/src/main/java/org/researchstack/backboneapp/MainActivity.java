@@ -45,6 +45,9 @@ import org.researchstack.backbone.ui.step.layout.ConsentSignatureStepLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
+
+
 public class MainActivity extends PinCodeActivity
 {
 
@@ -53,6 +56,7 @@ public class MainActivity extends PinCodeActivity
     // Activity Request Codes
     private static final int REQUEST_CONSENT = 0;
     private static final int REQUEST_SURVEY  = 1;
+    private static final int REQUEST_YADL_FULL  = 2;
 
     // Task/Step Identifiers
     public static final  String FORM_STEP                 = "form_step";
@@ -76,10 +80,15 @@ public class MainActivity extends PinCodeActivity
     public static final  String DECIMAL                   = "decimal";
     private static final String FORM_NAME                 = "form_name";
     public static final  String SAMPLE_SURVEY             = "sample_survey";
+    public static final  String YADL_FULL_ASSESSMENT             = "yadl_full_assessment";
 
     // Views
     private AppCompatButton consentButton;
     private AppCompatButton surveyButton;
+    private AppCompatButton yadlFullButton;
+    private AppCompatButton yadlSpotButton;
+    private AppCompatButton medlFullButton;
+    private AppCompatButton medlSpotButton;
     private AppCompatButton pamButton;
 
     @Override
@@ -111,6 +120,46 @@ public class MainActivity extends PinCodeActivity
             public void onClick(View v)
             {
                 launchSurvey();
+            }
+        });
+
+        yadlFullButton = (AppCompatButton) findViewById(R.id.yadl_full_button);
+        yadlFullButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                launchYADLFull();
+            }
+        });
+
+        yadlSpotButton = (AppCompatButton) findViewById(R.id.yadl_spot_button);
+        yadlSpotButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                launchYADLSpot();
+            }
+        });
+
+        medlFullButton = (AppCompatButton) findViewById(R.id.medl_full_button);
+        medlFullButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                launchMEDLFull();
+            }
+        });
+
+        medlSpotButton = (AppCompatButton) findViewById(R.id.medl_spot_button);
+        medlSpotButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                launchMEDLSpot();
             }
         });
 
@@ -218,6 +267,9 @@ public class MainActivity extends PinCodeActivity
         else if(requestCode == REQUEST_SURVEY && resultCode == RESULT_OK)
         {
             processSurveyResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
+        }
+        else if(requestCode == REQUEST_YADL_FULL && resultCode == RESULT_OK){
+            Log.i(LOG_TAG, "YADL FULL FINISHED");
         }
     }
 
@@ -446,9 +498,58 @@ public class MainActivity extends PinCodeActivity
         surveyAnswer.setText(results);
     }
 
+    private void launchYADLFull()
+    {
+        Log.i(LOG_TAG, "Launching YADL Full Assessment");
+
+//        RSXSingleImageClassificationSurveyStep
+
+        String identifier = "Bathing";
+        String imageTitle = "bathing";
+        String description = "Bathing";
+        String prompt = "How hard is this activity for you on a difficult day?";
+
+        AnswerFormat answerFormat = new ChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle.SingleChoice,
+                new Choice<>("Easy", "Easy"),
+                new Choice<>("Moderate", "Moderate"),
+                new Choice<>("Hard", "Hard"));
+
+        QuestionStep yadlFullStep = new RSXSingleImageClassificationSurveyStep(
+                identifier,
+                description,
+                prompt,
+                imageTitle,
+                answerFormat
+        );
+        // Create a task wrapping the steps.
+        OrderedTask task = new OrderedTask(YADL_FULL_ASSESSMENT, yadlFullStep);
+
+        // Create an activity using the task and set a delegate.
+        Intent intent = ViewTaskActivity.newIntent(this, task);
+        startActivityForResult(intent, REQUEST_SURVEY);
+
+    }
+
+    private void launchYADLSpot()
+    {
+        Log.i(LOG_TAG, "Launching YADL Spot Assessment");
+
+    }
+
+    private void launchMEDLFull()
+    {
+        Log.i(LOG_TAG, "Launching MEDL Full Assessment");
+
+    }
+
+    private void launchMEDLSpot() {
+        Log.i(LOG_TAG, "Launching MEDL Spot Assessment");
+
+    }
+
     private void launchPAM()
     {
-        Log.d(LOG_TAG, "Launching PAM");
+        Log.i(LOG_TAG, "Launching PAM");
 
     }
 }
