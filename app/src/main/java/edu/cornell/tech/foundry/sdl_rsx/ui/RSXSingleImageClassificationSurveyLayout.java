@@ -3,14 +3,18 @@ package edu.cornell.tech.foundry.sdl_rsx.ui;
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import org.researchstack.backbone.ui.step.body.BodyAnswer;
 import org.researchstack.backbone.utils.TextUtils;
 import org.researchstack.backboneapp.R;
 
@@ -20,6 +24,7 @@ import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.callbacks.StepCallbacks;
 import org.researchstack.backbone.ui.step.body.StepBody;
 import org.researchstack.backbone.ui.step.layout.SurveyStepLayout;
+import org.researchstack.backbone.ui.views.SubmitBar;
 
 import java.lang.reflect.Constructor;
 
@@ -28,19 +33,41 @@ import java.lang.reflect.Constructor;
  */
 public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
 
-    //This is also declared private by superclass, but no getter has been defined
-    //probably shoudl remove this
-    private StepResult   stepResult;
-    //need to keep this
-    private QuestionStep questionStep;
-
-    private StepCallbacks callbacks;
-
-    private LinearLayout container;
-    private StepBody     stepBody;
 
     public static final String TAG = RSXSingleImageClassificationSurveyLayout.class.getSimpleName();
 
+
+    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Data used to initializeLayout and return
+    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    //This is also declared private by superclass, but no getter has been defined
+    //probably shoudl remove this
+//    private StepResult   stepResult;
+    //need to keep this
+    private QuestionStep questionStep;
+
+    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Communicate w/ host
+    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    private StepCallbacks callbacks;
+
+    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Child Views
+    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    private LinearLayout container;
+    private StepBody     stepBody;
+
+
+    //Getters and Setters
+
+    @Override
+    public Step getStep()
+    {
+        return this.questionStep;
+    }
+    public StepBody getStepBody() { return this.stepBody; }
+
+    //Constructors
     public RSXSingleImageClassificationSurveyLayout(Context context)
     {
         super(context);
@@ -55,6 +82,8 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
     {
         super(context, attrs, defStyleAttr);
     }
+
+    //Init Methods
 
     @Override
     public void initialize(Step step, StepResult result)
@@ -81,8 +110,10 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         ImageView imageView = (ImageView) findViewById(R.id.rsx_single_image_classification_survey_image_view);
         TextView itemDescriptionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_item_description_text_view);
         TextView questionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_question_text_view);
-//        SubmitBar submitBar = (SubmitBar) findViewById(R.id.rsb_submit_bar);
+        SubmitBar submitBar = (SubmitBar) findViewById(org.researchstack.backbone.R.id.rsb_submit_bar);
+        submitBar.setVisibility(View.GONE);
 //        submitBar.setPositiveAction(v -> onNextClicked());
+//        submitBar.getPositiveActionView().setVisibility(View.GONE);
 
 
         if(step != null) {
@@ -125,11 +156,8 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
 //        }
 //    }
 
-    @Override
-    public Step getStep()
-    {
-        return this.questionStep;
-    }
+
+
 
 
 
@@ -146,10 +174,18 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
 //
 //    void setCallbacks(StepCallbacks callbacks);
 
+
+
+
+    /**
+     * Method allowing a step to consume a back event.
+     *
+     * @return
+     */
     @Override
     public boolean isBackEventConsumed()
     {
-        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, getStep(), stepBody.getStepResult(false));
+        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepBody().getStepResult(false));
         return false;
     }
 
@@ -164,6 +200,57 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
     {
         return R.layout.rsx_single_image_classification_survey_layout;
     }
+
+
+
+
+    @Override
+    public Parcelable onSaveInstanceState()
+    {
+        callbacks.onSaveStep(StepCallbacks.ACTION_NONE, getStep(), this.getStepBody().getStepResult(false));
+        return super.onSaveInstanceState();
+    }
+
+    @Override
+    protected void onNextClicked()
+    {
+        BodyAnswer bodyAnswer = this.getStepBody().getBodyAnswerState();
+
+        if(bodyAnswer == null || ! bodyAnswer.isValid())
+        {
+            Toast.makeText(getContext(),
+                    bodyAnswer == null
+                            ? BodyAnswer.INVALID.getString(getContext())
+                            : bodyAnswer.getString(getContext()),
+                    Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
+                    this.getStep(),
+                    this.getStepBody().getStepResult(false));
+        }
+    }
+
+    @Override
+    public void onSkipClicked()
+    {
+        if(callbacks != null)
+        {
+            // empty step result when skipped
+            callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
+                    this.getStep(),
+                    this.getStepBody().getStepResult(true));
+        }
+    }
+
+    @Override
+    public String getString(@StringRes int stringResId)
+    {
+        return getResources().getString(stringResId);
+    }
+
+
 
 
 

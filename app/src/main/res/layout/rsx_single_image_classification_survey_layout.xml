@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,14 +14,14 @@
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <ImageView
-            android:id="@+id/rsx_single_image_classification_survey_image_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/rsx_single_image_classification_survey_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
     </LinearLayout>
 
     <LinearLayout
@@ -30,37 +31,90 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/rsx_single_image_classification_item_description_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Activity Description"
-            android:gravity="center"
-            android:textSize="30sp"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"/>
-
-        <TextView
-            android:id="@+id/rsx_single_image_classification_question_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="How hard was this activity for you today?"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:textColor="@color/black"/>
-
-        <LinearLayout
+        <RelativeLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/rsx_single_image_classification_button_container_view"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/colorAccent">
+            android:layout_height="match_parent"
+            >
+
+            <TextView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rsx_single_image_classification_item_description_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Activity Description"
+                android:gravity="center"
+                android:textSize="30sp"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/white"
+                android:layout_above="@+id/rsx_single_image_classification_question_text_view"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true" />
+
+            <TextView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rsx_single_image_classification_question_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="How hard was this activity for you today?"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:textColor="@color/black"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rsx_single_image_classification_button_container_view"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@color/colorAccent"
+                android:layout_below="@+id/rsx_single_image_classification_question_text_view"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_above="@+id/rsx_single_image_classification_submit_bar">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="Button 1"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="Button 2"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="Button 3"/>
+            </LinearLayout>
+
+            <org.researchstack.backbone.ui.views.SubmitBar
+                android:id="@+id/rsx_single_image_classification_submit_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+
+
+
+
+
 
 </LinearLayout>
 
