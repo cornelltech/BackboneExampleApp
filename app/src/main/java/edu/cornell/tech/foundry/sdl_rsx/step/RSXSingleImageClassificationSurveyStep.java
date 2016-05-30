@@ -7,6 +7,7 @@ import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.step.layout.SurveyStepLayout;
 
 import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyLayout;
+import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyBody;
 
 /**
  * Created by jk on 5/26/16.
@@ -42,7 +43,7 @@ public class RSXSingleImageClassificationSurveyStep extends QuestionStep {
     @Override
     public Class<?> getStepBodyClass()
     {
-        return this.getAnswerFormat().getQuestionType().getStepBodyClass();
+        return RSXSingleImageClassificationSurveyBody.class;
     }
     /**
      * The base64-encoded image.

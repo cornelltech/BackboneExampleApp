@@ -7,7 +7,9 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 
 
 import org.researchstack.backbone.ui.step.body.BodyAnswer;
+import org.researchstack.backbone.utils.LogExt;
 import org.researchstack.backbone.utils.TextUtils;
 import org.researchstack.backboneapp.R;
 
@@ -65,6 +68,7 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
     {
         return this.questionStep;
     }
+
     public StepBody getStepBody() { return this.stepBody; }
 
     //Constructors
@@ -101,7 +105,7 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
     public void initializeStep(RSXSingleImageClassificationSurveyStep step, StepResult result)
     {
         this.initStepLayout(step);
-        this.initStepBody();
+        this.initStepBody(step, result);
     }
 
 //    @Override
@@ -111,9 +115,9 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         TextView itemDescriptionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_item_description_text_view);
         TextView questionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_question_text_view);
         SubmitBar submitBar = (SubmitBar) findViewById(org.researchstack.backbone.R.id.rsb_submit_bar);
-        submitBar.setVisibility(View.GONE);
+//        submitBar.setVisibility(View.GONE);
 //        submitBar.setPositiveAction(v -> onNextClicked());
-//        submitBar.getPositiveActionView().setVisibility(View.GONE);
+        submitBar.getPositiveActionView().setVisibility(View.GONE);
 
 
         if(step != null) {
@@ -132,29 +136,56 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
                 }
             }
 
+            submitBar.setNegativeTitle(org.researchstack.backbone.R.string.rsb_step_skip);
+            submitBar.setNegativeAction(v -> onSkipClicked());
+
         }
     }
 
-    @Override
-    public void initStepBody()
+    public void initStepBody(RSXSingleImageClassificationSurveyStep step, StepResult result)
     {
+        LogExt.i(getClass(), "initStepBody()");
+
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+
+        RSXSingleImageClassificationSurveyBody surveyBody = new RSXSingleImageClassificationSurveyBody<>(step, result);
+        surveyBody.setOnSelectionListener( new RSXSingleImageClassificationSurveyBody.OnSelectionListener() {
+            public void onSelection(RSXSingleImageClassificationSurveyBody body) {
+                onNextClicked();
+            }
+        });
+        surveyBody.setupBodyView(inflater, container);
+        this.stepBody = surveyBody;
+
+//        if(body != null)
+//        {
+//            View oldView = container.findViewById(R.id.rsx_single_image_classification_button_container_view);
+//            int bodyIndex = container.indexOfChild(oldView);
+//            container.removeView(oldView);
+//            container.addView(body, bodyIndex);
+//            body.setId(R.id.rsx_single_image_classification_button_container_view);
+//        }
 
     }
 
-//    @NonNull
-//    private StepBody createStepBody(QuestionStep questionStep, StepResult result)
-//    {
-//        try
-//        {
-//            Class cls = questionStep.getStepBodyClass();
-//            Constructor constructor = cls.getConstructor(Step.class, StepResult.class);
-//            return (StepBody) constructor.newInstance(questionStep, result);
-//        }
-//        catch(Exception e)
-//        {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    @NonNull
+    private StepBody createStepBody(QuestionStep questionStep, StepResult result)
+    {
+        try
+        {
+            Class cls = questionStep.getStepBodyClass();
+            Constructor constructor = cls.getConstructor(Step.class, StepResult.class);
+            return (StepBody) constructor.newInstance(questionStep, result);
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setupBody(int viewType, LayoutInflater inflater, ViewGroup parent) {
+
+    }
 
 
 

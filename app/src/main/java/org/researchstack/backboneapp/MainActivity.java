@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.researchstack.backbone.StorageAccess;
 import org.researchstack.backbone.answerformat.AnswerFormat;
 import org.researchstack.backbone.answerformat.BooleanAnswerFormat;
@@ -36,16 +38,25 @@ import org.researchstack.backbone.step.ConsentVisualStep;
 import org.researchstack.backbone.step.FormStep;
 import org.researchstack.backbone.step.InstructionStep;
 import org.researchstack.backbone.step.QuestionStep;
+import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.task.OrderedTask;
 import org.researchstack.backbone.task.Task;
 import org.researchstack.backbone.ui.PinCodeActivity;
 import org.researchstack.backbone.ui.ViewTaskActivity;
 import org.researchstack.backbone.ui.step.layout.ConsentSignatureStepLayout;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
 public class MainActivity extends PinCodeActivity
@@ -220,6 +231,7 @@ public class MainActivity extends PinCodeActivity
         TextView consentedDate = (TextView)findViewById(R.id.consented_date);
         ImageView consentedSig = (ImageView) findViewById(R.id.consented_signature);
 
+
         if(prefs.hasConsented())
         {
             consentButton.setVisibility(View.GONE);
@@ -247,7 +259,7 @@ public class MainActivity extends PinCodeActivity
         if(prefs.hasSurveyed())
         {
             surveyAnswer.setVisibility(View.VISIBLE);
-            printSurveyInfo(surveyAnswer);
+//            printSurveyInfo(surveyAnswer);
         }
         else
         {
@@ -482,31 +494,84 @@ public class MainActivity extends PinCodeActivity
         initViews();
     }
 
-    private void printSurveyInfo(TextView surveyAnswer)
-    {
-        TaskResult taskResult = StorageAccess.getInstance()
-                .getAppDatabase()
-                .loadLatestTaskResult(SAMPLE_SURVEY);
+//    private void printSurveyInfo(TextView surveyAnswer)
+//    {
+//        TaskResult taskResult = StorageAccess.getInstance()
+//                .getAppDatabase()
+//                .loadLatestTaskResult(SAMPLE_SURVEY);
+//
+//        String results = "";
+//        for(String id : taskResult.getResults().keySet())
+//        {
+//            StepResult stepResult = taskResult.getStepResult(id);
+//            results += id + ": " + stepResult.getResult().toString() + "\n";
+//        }
+//
+//        surveyAnswer.setText(results);
+//    }
 
-        String results = "";
-        for(String id : taskResult.getResults().keySet())
-        {
-            StepResult stepResult = taskResult.getStepResult(id);
-            results += id + ": " + stepResult.getResult().toString() + "\n";
+
+    public class ActivityDescriptor {
+
+        public String identifier;
+        public String imageTitle;
+        public String description;
+
+        ActivityDescriptor(String identifier, String imageTitle, String description) {
+            this.identifier = identifier;
+            this.imageTitle = imageTitle;
+            this.description = description;
         }
 
-        surveyAnswer.setText(results);
+    }
+
+    private ArrayList<ActivityDescriptor> loadActivitiesFromJSONFile(int resourceID) {
+
+
+        //Get Data From Text Resource File Contains Json Data.
+        InputStream inputStream = getResources().openRawResource(resourceID);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        int ctr;
+        try {
+            ctr = inputStream.read();
+            while (ctr != -1) {
+                byteArrayOutputStream.write(ctr);
+                ctr = inputStream.read();
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.v("Text Data", byteArrayOutputStream.toString());
+        ArrayList<ActivityDescriptor> activities = new ArrayList<>();
+        try {
+            // Parse the data into jsonobject to get original data in form of json.
+            JSONObject jObject = new JSONObject(
+                    byteArrayOutputStream.toString());
+            JSONObject yadlJSON = jObject.getJSONObject("YADL");
+            JSONArray activitiesJSON = yadlJSON.getJSONArray("activities");
+            String identifier = "";
+            String imageTitle = "";
+            String description = "";
+            for (int i = 0; i < activitiesJSON.length(); i++) {
+                identifier = activitiesJSON.getJSONObject(i).getString("identifier");
+                imageTitle = activitiesJSON.getJSONObject(i).getString("imageTitle");
+                description = activitiesJSON.getJSONObject(i).getString("description");
+                activities.add(new ActivityDescriptor(identifier, imageTitle, description));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return activities;
     }
 
     private void launchYADLFull()
     {
         Log.i(LOG_TAG, "Launching YADL Full Assessment");
 
-//        RSXSingleImageClassificationSurveyStep
+        ArrayList<ActivityDescriptor> activities = this.loadActivitiesFromJSONFile(R.raw.yadl);
 
-        String identifier = "Bathing";
-        String imageTitle = "bathing";
-        String description = "Bathing";
         String prompt = "How hard is this activity for you on a difficult day?";
 
         AnswerFormat answerFormat = new ChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle.SingleChoice,
@@ -514,15 +579,25 @@ public class MainActivity extends PinCodeActivity
                 new Choice<>("Moderate", "Moderate"),
                 new Choice<>("Hard", "Hard"));
 
-        QuestionStep yadlFullStep = new RSXSingleImageClassificationSurveyStep(
-                identifier,
-                description,
-                prompt,
-                imageTitle,
-                answerFormat
-        );
+
+        ArrayList<Step> yadlFullSteps = new ArrayList<>();
+
+        for(int i=0; i<activities.size(); i++) {
+
+            ActivityDescriptor activityDescriptor = activities.get(i);
+
+            RSXSingleImageClassificationSurveyStep yadlFullStep = new RSXSingleImageClassificationSurveyStep(
+                    activityDescriptor.identifier,
+                    activityDescriptor.description,
+                    prompt,
+                    activityDescriptor.imageTitle,
+                    answerFormat
+            );
+
+            yadlFullSteps.add(yadlFullStep);
+        }
         // Create a task wrapping the steps.
-        OrderedTask task = new OrderedTask(YADL_FULL_ASSESSMENT, yadlFullStep);
+        OrderedTask task = new OrderedTask(YADL_FULL_ASSESSMENT, yadlFullSteps);
 
         // Create an activity using the task and set a delegate.
         Intent intent = ViewTaskActivity.newIntent(this, task);
