@@ -1,7 +1,11 @@
 package org.researchstack.backboneapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -280,8 +284,9 @@ public class MainActivity extends PinCodeActivity
         {
             processSurveyResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
         }
-        else if(requestCode == REQUEST_YADL_FULL && resultCode == RESULT_OK){
+        else if(requestCode == REQUEST_YADL_FULL && resultCode == RESULT_OK) {
             Log.i(LOG_TAG, "YADL FULL FINISHED");
+            processSurveyResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
         }
     }
 
@@ -494,6 +499,11 @@ public class MainActivity extends PinCodeActivity
         initViews();
     }
 
+    private void processYADLFullResult(TaskResult result)
+    {
+
+    }
+
 //    private void printSurveyInfo(TextView surveyAnswer)
 //    {
 //        TaskResult taskResult = StorageAccess.getInstance()
@@ -566,6 +576,15 @@ public class MainActivity extends PinCodeActivity
         return activities;
     }
 
+    private static String getResourceDrawable(String name, Context context) {
+        int nameResourceID = context.getResources().getIdentifier(name, "drawable", context.getApplicationInfo().packageName);
+        if (nameResourceID == 0) {
+            throw new IllegalArgumentException("No resource string found with name " + name);
+        } else {
+            return context.getString(nameResourceID);
+        }
+    }
+
     private void launchYADLFull()
     {
         Log.i(LOG_TAG, "Launching YADL Full Assessment");
@@ -601,7 +620,7 @@ public class MainActivity extends PinCodeActivity
 
         // Create an activity using the task and set a delegate.
         Intent intent = ViewTaskActivity.newIntent(this, task);
-        startActivityForResult(intent, REQUEST_SURVEY);
+        startActivityForResult(intent, REQUEST_YADL_FULL);
 
     }
 
