@@ -7,7 +7,7 @@ import android.graphics.Color;
  */
 public class RSXTextChoiceWithColor <T> extends Choice {
 
-    private Color color;
+    private int color;
 
     /**
      * Creates a choice object with the provided text and value, color is null
@@ -17,7 +17,7 @@ public class RSXTextChoiceWithColor <T> extends Choice {
      */
     public RSXTextChoiceWithColor(String text, T value)
     {
-        this(text, value, null);
+        this(text, value, 0);
     }
 
     /**
@@ -28,17 +28,17 @@ public class RSXTextChoiceWithColor <T> extends Choice {
      *                   step
      * @param color      color to display the choice
      */
-    public RSXTextChoiceWithColor(String text, T value, Color color)
+    public RSXTextChoiceWithColor(String text, T value, int color)
     {
         super(text, value);
         this.color = color;
     }
 
-    public Color getColor() {
+    public int getColor() {
         return this.color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(int color) {
         this.color = color;
     }
 

@@ -126,6 +126,14 @@ public class RSXSingleImageClassificationSurveyBody <T> implements StepBody {
             Button button = new AppCompatButton(parent.getContext());
             button.setText(choice.getText());
             button.setId(i);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1.0f);
+
+            button.setLayoutParams(layoutParams);
+
+
 
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {

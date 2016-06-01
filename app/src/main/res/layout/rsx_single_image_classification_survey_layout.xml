@@ -36,6 +36,7 @@
             android:id="@+id/rsx_single_image_classification_item_description_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0"
             android:text="Activity Description"
             android:gravity="center"
             android:textSize="30sp"
@@ -48,6 +49,7 @@
             android:id="@+id/rsx_single_image_classification_question_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0"
             android:text="How hard was this activity for you today?"
             android:gravity="center"
             android:textSize="24sp"
@@ -58,8 +60,11 @@
             android:id="@+id/rsx_single_image_classification_button_container_view"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@color/colorAccent">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            >
 
 
         </LinearLayout>

@@ -48,6 +48,7 @@ import org.researchstack.backbone.task.Task;
 import org.researchstack.backbone.ui.PinCodeActivity;
 import org.researchstack.backbone.ui.ViewTaskActivity;
 import org.researchstack.backbone.ui.step.layout.ConsentSignatureStepLayout;
+import org.researchstack.backbone.utils.ResUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,6 +59,8 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
+import edu.cornell.tech.foundry.sdl_rsx.task.YADLFullAssessmentTask;
+import edu.cornell.tech.foundry.sdl_rsx.utils.ImageDescriptor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -557,10 +560,11 @@ public class MainActivity extends PinCodeActivity
         ArrayList<ActivityDescriptor> activities = new ArrayList<>();
         try {
             // Parse the data into jsonobject to get original data in form of json.
-            JSONObject jObject = new JSONObject(
+            JSONObject completeJSON = new JSONObject(
                     byteArrayOutputStream.toString());
-            JSONObject yadlJSON = jObject.getJSONObject("YADL");
-            JSONArray activitiesJSON = yadlJSON.getJSONArray("activities");
+            JSONObject typeJSON = completeJSON.getJSONObject("YADL");
+            JSONObject assessmentJSON = typeJSON.getJSONObject("full");
+            JSONArray activitiesJSON = typeJSON.getJSONArray("activities");
             String identifier = "";
             String imageTitle = "";
             String description = "";
@@ -574,15 +578,6 @@ public class MainActivity extends PinCodeActivity
             e.printStackTrace();
         }
         return activities;
-    }
-
-    private static String getResourceDrawable(String name, Context context) {
-        int nameResourceID = context.getResources().getIdentifier(name, "drawable", context.getApplicationInfo().packageName);
-        if (nameResourceID == 0) {
-            throw new IllegalArgumentException("No resource string found with name " + name);
-        } else {
-            return context.getString(nameResourceID);
-        }
     }
 
     private void launchYADLFull()
@@ -605,6 +600,11 @@ public class MainActivity extends PinCodeActivity
 
             ActivityDescriptor activityDescriptor = activities.get(i);
 
+//            int resId = ResUtils.getDrawableResourceId(this, activityDescriptor.imageTitle);
+//            Bitmap image = BitmapFactory.decodeResource(getResources(), resId);
+
+//            String image = edu.cornell.tech.foundry.sdl_rsx.utils.ImageUtils.encodeToBase64(bm, Bitmap.CompressFormat.JPEG, 100);
+
             RSXSingleImageClassificationSurveyStep yadlFullStep = new RSXSingleImageClassificationSurveyStep(
                     activityDescriptor.identifier,
                     activityDescriptor.description,
@@ -616,7 +616,9 @@ public class MainActivity extends PinCodeActivity
             yadlFullSteps.add(yadlFullStep);
         }
         // Create a task wrapping the steps.
-        OrderedTask task = new OrderedTask(YADL_FULL_ASSESSMENT, yadlFullSteps);
+//        OrderedTask task = new OrderedTask(YADL_FULL_ASSESSMENT, yadlFullSteps);
+
+        OrderedTask task = YADLFullAssessmentTask.create(YADL_FULL_ASSESSMENT, "yadl", this);
 
         // Create an activity using the task and set a delegate.
         Intent intent = ViewTaskActivity.newIntent(this, task);

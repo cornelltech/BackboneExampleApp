@@ -3,6 +3,7 @@ package edu.cornell.tech.foundry.sdl_rsx.ui;
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import org.researchstack.backbone.ui.step.body.BodyAnswer;
 import org.researchstack.backbone.utils.LogExt;
+import org.researchstack.backbone.utils.ResUtils;
 import org.researchstack.backbone.utils.TextUtils;
 import org.researchstack.backboneapp.R;
 
@@ -115,8 +117,6 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         TextView itemDescriptionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_item_description_text_view);
         TextView questionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_question_text_view);
         SubmitBar submitBar = (SubmitBar) findViewById(org.researchstack.backbone.R.id.rsb_submit_bar);
-//        submitBar.setVisibility(View.GONE);
-//        submitBar.setPositiveAction(v -> onNextClicked());
         submitBar.getPositiveActionView().setVisibility(View.GONE);
 
 
@@ -129,8 +129,8 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
                 questionTextView.setText(step.getText());
             }
 
-            if (!TextUtils.isEmpty(step.getImage())) {
-                int resId = getContext().getResources().getIdentifier(step.getImage(), "drawable", getContext().getPackageName());
+            if (step.getImage() != null) {
+                int resId = ResUtils.getDrawableResourceId(getContext(), step.getImage());
                 if (resId != 0) {
                     imageView.setImageResource(resId);
                 }
@@ -157,15 +157,6 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         surveyBody.setupBodyView(inflater, container);
         this.stepBody = surveyBody;
 
-//        if(body != null)
-//        {
-//            View oldView = container.findViewById(R.id.rsx_single_image_classification_button_container_view);
-//            int bodyIndex = container.indexOfChild(oldView);
-//            container.removeView(oldView);
-//            container.addView(body, bodyIndex);
-//            body.setId(R.id.rsx_single_image_classification_button_container_view);
-//        }
-
     }
 
     @NonNull
@@ -186,27 +177,6 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
     private void setupBody(int viewType, LayoutInflater inflater, ViewGroup parent) {
 
     }
-
-
-
-
-
-
-//    void initialize(Step step, StepResult result);
-//
-//    View getLayout();
-//
-//    /**
-//     * Method allowing a step layout to consume a back event.
-//     *
-//     * @return
-//     */
-//    boolean isBackEventConsumed();
-//
-//    void setCallbacks(StepCallbacks callbacks);
-
-
-
 
     /**
      * Method allowing a step to consume a back event.
