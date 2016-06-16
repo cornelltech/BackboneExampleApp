@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.callbacks.StepCallbacks;
 import org.researchstack.backbone.ui.step.body.BodyAnswer;
 import org.researchstack.backbone.ui.step.body.StepBody;
+import org.researchstack.backbone.ui.step.layout.StepLayout;
 import org.researchstack.backbone.ui.step.layout.SurveyStepLayout;
 import org.researchstack.backbone.ui.views.SubmitBar;
 import org.researchstack.backbone.utils.LogExt;
@@ -36,7 +38,7 @@ import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyS
 /**
  * Created by jk on 6/2/16.
  */
-abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLayout {
+abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout implements StepLayout {
 
 
     public static final String TAG = RSXMultipleImageSelectionSurveyLayout.class.getSimpleName();
@@ -62,12 +64,12 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
     private Button nothingSelectedButton;
 
     //Getters and Setters
-
-    @Override
     public Step getStep()
     {
         return this.questionStep;
     }
+
+
 
     public StepBody getStepBody() { return this.stepBody; }
 
@@ -87,8 +89,7 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
         super(context, attrs, defStyleAttr);
     }
 
-    //Init Methods
-
+    //Step Layout Methods
     @Override
     public void initialize(Step step, StepResult result)
     {
@@ -101,6 +102,27 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
         this.initializeStep((RSXMultipleImageSelectionSurveyStep) step, result);
     }
 
+    @Override
+    public View getLayout()
+    {
+        return this;
+    }
+
+    @Override
+    public boolean isBackEventConsumed()
+    {
+        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepBody().getStepResult(false));
+        return false;
+    }
+
+    @Override
+    public void setCallbacks(StepCallbacks callbacks)
+    {
+        this.callbacks = callbacks;
+    }
+
+
+    //Init Methods
     public void initializeStep(RSXMultipleImageSelectionSurveyStep step, StepResult result)
     {
         this.initStepLayout(step);
@@ -112,11 +134,15 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
 
         RSXMultipleImageSelectionSurveyOptions options = step.getOptions();
 
+        // Init root
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        inflater.inflate(R.layout.rsx_multiple_image_selection_survey, this, true);
+
         TextView questionTextView = (TextView) findViewById(R.id.question_text_view);
         TextView additionalTextview = (TextView) findViewById(R.id.additional_text_view);
-        SubmitBar submitBar = (SubmitBar) findViewById(org.researchstack.backbone.R.id.rsb_submit_bar);
-        submitBar.getPositiveActionView().setVisibility(View.GONE);
-        submitBar.getNegativeActionView().setVisibility(View.GONE);
+//        SubmitBar submitBar = (SubmitBar) findViewById(org.researchstack.backbone.R.id.rsb_submit_bar);
+//        submitBar.getPositiveActionView().setVisibility(View.GONE);
+//        submitBar.getNegativeActionView().setVisibility(View.GONE);
 
         this.somethingSelectedButton = (Button) findViewById(R.id.something_selected_button);
         this.somethingSelectedButton.setOnClickListener(new View.OnClickListener() {
@@ -168,8 +194,8 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
             this.somethingSelectedButton.setText(this.getSomethingSelectedButtonText());
             this.nothingSelectedButton.setText(this.getNothingSelectedButtonText());
 
-            this.somethingSelectedButton.setVisibility((selectedAnswers.size() > 0) ? View.VISIBLE : View.GONE);
-            this.nothingSelectedButton.setVisibility((selectedAnswers.size() > 0) ? View.GONE : View.VISIBLE);
+            this.somethingSelectedButton.setVisibility((selectedAnswers.size() > 0) ? View.VISIBLE : View.INVISIBLE);
+            this.nothingSelectedButton.setVisibility((selectedAnswers.size() > 0) ? View.INVISIBLE : View.VISIBLE);
         }
 
         RSXMultipleImageSelectionSurveyBody body = (RSXMultipleImageSelectionSurveyBody)this.getStepBody();
@@ -247,24 +273,13 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
      *
      * @return
      */
-    @Override
-    public boolean isBackEventConsumed()
-    {
-        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepBody().getStepResult(false));
-        return false;
-    }
 
-    @Override
-    public void setCallbacks(StepCallbacks callbacks)
-    {
-        this.callbacks = callbacks;
-    }
 
-    @Override
-    public int getContentResourceId()
-    {
-        return R.layout.rsx_multiple_image_selection_survey;
-    }
+//    @Override
+//    public int getContentResourceId()
+//    {
+//        return R.layout.rsx_multiple_image_selection_survey;
+//    }
 
     @Override
     public Parcelable onSaveInstanceState()
@@ -273,7 +288,6 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
         return super.onSaveInstanceState();
     }
 
-    @Override
     protected void onNextClicked()
     {
         BodyAnswer bodyAnswer = this.getStepBody().getBodyAnswerState();
@@ -294,7 +308,6 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
         }
     }
 
-    @Override
     public void onSkipClicked()
     {
         if(callbacks != null)
@@ -306,7 +319,6 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends SurveyStepLa
         }
     }
 
-    @Override
     public String getString(@StringRes int stringResId)
     {
         return getResources().getString(stringResId);

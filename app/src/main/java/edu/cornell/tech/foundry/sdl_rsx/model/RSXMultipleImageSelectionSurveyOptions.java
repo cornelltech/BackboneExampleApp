@@ -14,7 +14,7 @@ public class RSXMultipleImageSelectionSurveyOptions implements Serializable {
     private int somethingSelectedButtonColor;
     private int nothingSelectedButtonColor;
     private int itemCellSelectedColor;
-    private String itemCellSelectedOverlayImage;
+    private String itemCellSelectedOverlayImageTitle;
     private int itemCellTextBackgroundColor;
     private int itemCollectionViewBackgroundColor;
     private int itemsPerRow;
@@ -32,8 +32,8 @@ public class RSXMultipleImageSelectionSurveyOptions implements Serializable {
             if (json.has("itemCellSelectedColor")) {
                 this.itemCellSelectedColor = Color.parseColor(json.getString("itemCellSelectedColor"));
             }
-            if (json.has("itemCellSelectedOverlayImage")) {
-                this.itemCellSelectedOverlayImage = json.getString("itemCellSelectedOverlayImage");
+            if (json.has("itemCellSelectedOverlayImageTitle")) {
+                this.itemCellSelectedOverlayImageTitle = json.getString("itemCellSelectedOverlayImageTitle");
             }
             if (json.has("itemCellTextBackgroundColor")) {
                 this.itemCellTextBackgroundColor = Color.parseColor(json.getString("itemCellTextBackgroundColor"));
@@ -65,8 +65,8 @@ public class RSXMultipleImageSelectionSurveyOptions implements Serializable {
         return this.itemCellSelectedColor;
     }
 
-    public String getItemCellSelectedOverlayImage() {
-        return this.itemCellSelectedOverlayImage;
+    public String getItemCellSelectedOverlayImageTitle() {
+        return this.itemCellSelectedOverlayImageTitle;
     }
 
     public int getItemCellTextBackgroundColor() {

@@ -103,8 +103,8 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
                 missCell.setBackgroundColor(this.step.getOptions().getItemCellSelectedColor());
             }
 
-            if (!TextUtils.isEmpty( this.step.getOptions().getItemCellSelectedOverlayImage() )) {
-                int checkResId = ResUtils.getDrawableResourceId(missCell.getContext(), this.step.getOptions().getItemCellSelectedOverlayImage());
+            if (!TextUtils.isEmpty( this.step.getOptions().getItemCellSelectedOverlayImageTitle() )) {
+                int checkResId = ResUtils.getDrawableResourceId(missCell.getContext(), this.step.getOptions().getItemCellSelectedOverlayImageTitle());
 
                 checkImageView.setVisibility(View.VISIBLE);
                 if (checkResId != 0) {
