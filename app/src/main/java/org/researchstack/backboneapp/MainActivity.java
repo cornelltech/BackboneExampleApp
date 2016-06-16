@@ -60,6 +60,7 @@ import java.util.List;
 
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLFullAssessmentTask;
+import edu.cornell.tech.foundry.sdl_rsx.task.YADLSpotAssessmentTask;
 import edu.cornell.tech.foundry.sdl_rsx.utils.ImageDescriptor;
 
 import com.google.gson.Gson;
@@ -75,6 +76,7 @@ public class MainActivity extends PinCodeActivity
     private static final int REQUEST_CONSENT = 0;
     private static final int REQUEST_SURVEY  = 1;
     private static final int REQUEST_YADL_FULL  = 2;
+    private static final int REQUEST_YADL_SPOT  = 3;
 
     // Task/Step Identifiers
     public static final  String FORM_STEP                 = "form_step";
@@ -99,6 +101,7 @@ public class MainActivity extends PinCodeActivity
     private static final String FORM_NAME                 = "form_name";
     public static final  String SAMPLE_SURVEY             = "sample_survey";
     public static final  String YADL_FULL_ASSESSMENT             = "yadl_full_assessment";
+    public static final  String YADL_SPOT_ASSESSMENT             = "yadl_spot_assessment";
 
     // Views
     private AppCompatButton consentButton;
@@ -289,6 +292,10 @@ public class MainActivity extends PinCodeActivity
         }
         else if(requestCode == REQUEST_YADL_FULL && resultCode == RESULT_OK) {
             Log.i(LOG_TAG, "YADL FULL FINISHED");
+            processSurveyResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
+        }
+        else if(requestCode == REQUEST_YADL_SPOT && resultCode == RESULT_OK) {
+            Log.i(LOG_TAG, "YADL SPOT FINISHED");
             processSurveyResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
         }
     }
@@ -584,39 +591,39 @@ public class MainActivity extends PinCodeActivity
     {
         Log.i(LOG_TAG, "Launching YADL Full Assessment");
 
-        ArrayList<ActivityDescriptor> activities = this.loadActivitiesFromJSONFile(R.raw.yadl);
-
-        String prompt = "How hard is this activity for you on a difficult day?";
-
-        AnswerFormat answerFormat = new ChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle.SingleChoice,
-                new Choice<>("Easy", "Easy"),
-                new Choice<>("Moderate", "Moderate"),
-                new Choice<>("Hard", "Hard"));
-
-
-        ArrayList<Step> yadlFullSteps = new ArrayList<>();
-
-        for(int i=0; i<activities.size(); i++) {
-
-            ActivityDescriptor activityDescriptor = activities.get(i);
-
-//            int resId = ResUtils.getDrawableResourceId(this, activityDescriptor.imageTitle);
-//            Bitmap image = BitmapFactory.decodeResource(getResources(), resId);
-
-//            String image = edu.cornell.tech.foundry.sdl_rsx.utils.ImageUtils.encodeToBase64(bm, Bitmap.CompressFormat.JPEG, 100);
-
-            RSXSingleImageClassificationSurveyStep yadlFullStep = new RSXSingleImageClassificationSurveyStep(
-                    activityDescriptor.identifier,
-                    activityDescriptor.description,
-                    prompt,
-                    activityDescriptor.imageTitle,
-                    answerFormat
-            );
-
-            yadlFullSteps.add(yadlFullStep);
-        }
-        // Create a task wrapping the steps.
-//        OrderedTask task = new OrderedTask(YADL_FULL_ASSESSMENT, yadlFullSteps);
+//        ArrayList<ActivityDescriptor> activities = this.loadActivitiesFromJSONFile(R.raw.yadl);
+//
+//        String prompt = "How hard is this activity for you on a difficult day?";
+//
+//        AnswerFormat answerFormat = new ChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle.SingleChoice,
+//                new Choice<>("Easy", "Easy"),
+//                new Choice<>("Moderate", "Moderate"),
+//                new Choice<>("Hard", "Hard"));
+//
+//
+//        ArrayList<Step> yadlFullSteps = new ArrayList<>();
+//
+//        for(int i=0; i<activities.size(); i++) {
+//
+//            ActivityDescriptor activityDescriptor = activities.get(i);
+//
+////            int resId = ResUtils.getDrawableResourceId(this, activityDescriptor.imageTitle);
+////            Bitmap image = BitmapFactory.decodeResource(getResources(), resId);
+//
+////            String image = edu.cornell.tech.foundry.sdl_rsx.utils.ImageUtils.encodeToBase64(bm, Bitmap.CompressFormat.JPEG, 100);
+//
+//            RSXSingleImageClassificationSurveyStep yadlFullStep = new RSXSingleImageClassificationSurveyStep(
+//                    activityDescriptor.identifier,
+//                    activityDescriptor.description,
+//                    prompt,
+//                    activityDescriptor.imageTitle,
+//                    answerFormat
+//            );
+//
+//            yadlFullSteps.add(yadlFullStep);
+//        }
+//        // Create a task wrapping the steps.
+////        OrderedTask task = new OrderedTask(YADL_FULL_ASSESSMENT, yadlFullSteps);
 
         OrderedTask task = YADLFullAssessmentTask.create(YADL_FULL_ASSESSMENT, "yadl", this);
 
@@ -629,6 +636,12 @@ public class MainActivity extends PinCodeActivity
     private void launchYADLSpot()
     {
         Log.i(LOG_TAG, "Launching YADL Spot Assessment");
+
+        OrderedTask task = YADLSpotAssessmentTask.create(YADL_SPOT_ASSESSMENT, "yadl", this);
+
+        // Create an activity using the task and set a delegate.
+        Intent intent = ViewTaskActivity.newIntent(this, task);
+        startActivityForResult(intent, REQUEST_YADL_SPOT);
 
     }
 

@@ -19,6 +19,7 @@ import java.util.List;
 import edu.cornell.tech.foundry.sdl_rsx.answerformat.RSXImageChoiceAnswerFormat;
 import edu.cornell.tech.foundry.sdl_rsx.choice.RSXImageChoice;
 import edu.cornell.tech.foundry.sdl_rsx.model.RSXActivityItem;
+import edu.cornell.tech.foundry.sdl_rsx.model.RSXMultipleImageSelectionSurveyOptions;
 import edu.cornell.tech.foundry.sdl_rsx.model.RSXSummary;
 import edu.cornell.tech.foundry.sdl_rsx.model.YADLSpotAssessment;
 import edu.cornell.tech.foundry.sdl_rsx.step.YADLSpotAssessmentStep;
@@ -28,11 +29,11 @@ import edu.cornell.tech.foundry.sdl_rsx.step.YADLSpotAssessmentStep;
  */
 public class YADLSpotAssessmentTask extends RSXMultipleImageSelectionSurveyTask {
 
-    private YADLSpotAssessmentTask(String identifier, List<Step> steps) {
-        super(identifier, steps);
+    private YADLSpotAssessmentTask(String identifier, RSXMultipleImageSelectionSurveyOptions options, List<Step> steps) {
+        super(identifier, options, steps);
     }
 
-    public static YADLSpotAssessmentTask create(String identifier, YADLSpotAssessment assessment) {
+    public static YADLSpotAssessmentTask create(String identifier, YADLSpotAssessment assessment, List<String> activityIdentifiers) {
         List<Step> steps = new ArrayList<>();
 
         if (assessment.getItems().isEmpty()) {
@@ -51,12 +52,16 @@ public class YADLSpotAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
 
             for(int i=0; i<assessment.getItems().size(); i++) {
                 RSXActivityItem activity = (RSXActivityItem) assessment.getItems().get(i);
-                choices.add(activity.getImageChoice());
+                //if activityIdentifiers not specified, include all activities,
+                //otherwise, include only activities that are in the list of activityIdentifiers
+                if (activityIdentifiers == null || activityIdentifiers.contains(activity.getIdentifier())) {
+                    choices.add(activity.getImageChoice());
+                }
             }
 
             AnswerFormat answerFormat = new RSXImageChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle.MultipleChoice, choices);
 
-            YADLSpotAssessmentStep spotAssessmentStep = new YADLSpotAssessmentStep(assessment.getIdentifier(), assessment.getPrompt(), answerFormat);
+            YADLSpotAssessmentStep spotAssessmentStep = new YADLSpotAssessmentStep(assessment.getIdentifier(), assessment.getPrompt(), answerFormat, assessment.getOptions());
 
             steps.add(spotAssessmentStep);
 
@@ -71,11 +76,11 @@ public class YADLSpotAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
 
         }
 
-        return new YADLSpotAssessmentTask(identifier, steps);
+        return new YADLSpotAssessmentTask(identifier, assessment.getOptions(), steps);
     }
 
     //context contains the resources for the config file as well as images
-    public static YADLSpotAssessmentTask create(String identifier,  String propertiesFileName, Context context) {
+    public static YADLSpotAssessmentTask create(String identifier,  String propertiesFileName, Context context, List<String> activityIdentifiers) {
 
         Resources r = context.getResources();
 
@@ -111,8 +116,12 @@ public class YADLSpotAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
             e.printStackTrace();
         }
 
-        return YADLSpotAssessmentTask.create(identifier, assessment);
+        return YADLSpotAssessmentTask.create(identifier, assessment, activityIdentifiers);
 
+    }
+
+    public static YADLSpotAssessmentTask create(String identifier,  String propertiesFileName, Context context) {
+        return YADLSpotAssessmentTask.create(identifier, propertiesFileName, context, null);
     }
 
 }

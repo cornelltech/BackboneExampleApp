@@ -4,10 +4,12 @@ import android.graphics.Color;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by jk on 6/1/16.
  */
-public class RSXMultipleImageSelectionSurveyOptions {
+public class RSXMultipleImageSelectionSurveyOptions implements Serializable {
 
     private int somethingSelectedButtonColor;
     private int nothingSelectedButtonColor;
@@ -27,8 +29,8 @@ public class RSXMultipleImageSelectionSurveyOptions {
             if (json.has("nothingSelectedButtonColor")) {
                 this.nothingSelectedButtonColor = Color.parseColor(json.getString("nothingSelectedButtonColor"));
             }
-            if (json.has("nothingSelectedButtonColor")) {
-                this.itemCellSelectedColor = Color.parseColor(json.getString("nothingSelectedButtonColor"));
+            if (json.has("itemCellSelectedColor")) {
+                this.itemCellSelectedColor = Color.parseColor(json.getString("itemCellSelectedColor"));
             }
             if (json.has("itemCellSelectedOverlayImage")) {
                 this.itemCellSelectedOverlayImage = json.getString("itemCellSelectedOverlayImage");

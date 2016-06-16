@@ -103,14 +103,12 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         this.initializeStep((RSXSingleImageClassificationSurveyStep) step, result);
     }
 
-//    @Override
     public void initializeStep(RSXSingleImageClassificationSurveyStep step, StepResult result)
     {
         this.initStepLayout(step);
         this.initStepBody(step, result);
     }
 
-//    @Override
     public void initStepLayout(RSXSingleImageClassificationSurveyStep step) {
         this.container = (LinearLayout) findViewById(R.id.rsx_single_image_classification_survey_content_container);
         ImageView imageView = (ImageView) findViewById(R.id.rsx_single_image_classification_survey_image_view);
@@ -154,6 +152,8 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
                 onNextClicked();
             }
         });
+
+
         surveyBody.setupBodyView(inflater, container);
         this.stepBody = surveyBody;
 
@@ -174,9 +174,9 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         }
     }
 
-    private void setupBody(int viewType, LayoutInflater inflater, ViewGroup parent) {
-
-    }
+//    private void setupBody(int viewType, LayoutInflater inflater, ViewGroup parent) {
+//
+//    }
 
     /**
      * Method allowing a step to consume a back event.

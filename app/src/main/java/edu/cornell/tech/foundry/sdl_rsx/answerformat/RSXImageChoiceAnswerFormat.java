@@ -23,7 +23,7 @@ public class RSXImageChoiceAnswerFormat extends ChoiceAnswerFormat {
     }
 
     public RSXImageChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle answerStyle, List<RSXImageChoice> choices) {
-        this(answerStyle, new RSXImageChoice[choices.size()]);
+        this(answerStyle, choices.toArray(new RSXImageChoice[choices.size()]));
     }
 
     public RSXImageChoice[] getImageChoices()
