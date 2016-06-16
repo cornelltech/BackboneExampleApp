@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 
 import org.researchstack.backbone.ui.step.body.BodyAnswer;
+import org.researchstack.backbone.ui.step.layout.StepLayout;
 import org.researchstack.backbone.utils.LogExt;
 import org.researchstack.backbone.utils.ResUtils;
 import org.researchstack.backbone.utils.TextUtils;
@@ -36,7 +39,7 @@ import java.lang.reflect.Constructor;
 /**
  * Created by jk on 5/26/16.
  */
-public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
+public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implements StepLayout {
 
 
     public static final String TAG = RSXSingleImageClassificationSurveyLayout.class.getSimpleName();
@@ -59,13 +62,14 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Child Views
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    private LinearLayout container;
+//    private LinearLayout container;
     private StepBody     stepBody;
+
+    private Button skipButton;
 
 
     //Getters and Setters
 
-    @Override
     public Step getStep()
     {
         return this.questionStep;
@@ -89,7 +93,7 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    //Init Methods
+    //StepLayout Methods
 
     @Override
     public void initialize(Step step, StepResult result)
@@ -103,6 +107,26 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         this.initializeStep((RSXSingleImageClassificationSurveyStep) step, result);
     }
 
+    @Override
+    public View getLayout() {
+        return this;
+    }
+
+    @Override
+    public boolean isBackEventConsumed()
+    {
+        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepBody().getStepResult(false));
+        return false;
+    }
+
+    @Override
+    public void setCallbacks(StepCallbacks callbacks)
+    {
+        this.callbacks = callbacks;
+    }
+
+
+    //Init Methods
     public void initializeStep(RSXSingleImageClassificationSurveyStep step, StepResult result)
     {
         this.initStepLayout(step);
@@ -110,13 +134,21 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
     }
 
     public void initStepLayout(RSXSingleImageClassificationSurveyStep step) {
-        this.container = (LinearLayout) findViewById(R.id.rsx_single_image_classification_survey_content_container);
-        ImageView imageView = (ImageView) findViewById(R.id.rsx_single_image_classification_survey_image_view);
-        TextView itemDescriptionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_item_description_text_view);
-        TextView questionTextView = (TextView) findViewById(R.id.rsx_single_image_classification_question_text_view);
-        SubmitBar submitBar = (SubmitBar) findViewById(org.researchstack.backbone.R.id.rsb_submit_bar);
-        submitBar.getPositiveActionView().setVisibility(View.GONE);
 
+        // Init root
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        inflater.inflate(R.layout.rsx_single_image_classification_survey_layout, this, true);
+
+        ImageView imageView = (ImageView) findViewById(R.id.item_image_view);
+        TextView itemDescriptionTextView = (TextView) findViewById(R.id.item_description_text_view);
+        TextView questionTextView = (TextView) findViewById(R.id.question_text_view);
+
+        this.skipButton = (Button) findViewById(R.id.skip_button);
+        this.skipButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onSkipClicked();
+            }
+        });
 
         if(step != null) {
             if (!TextUtils.isEmpty(step.getTitle()) && itemDescriptionTextView!=null) {
@@ -133,10 +165,6 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
                     imageView.setImageResource(resId);
                 }
             }
-
-            submitBar.setNegativeTitle(org.researchstack.backbone.R.string.rsb_step_skip);
-            submitBar.setNegativeAction(v -> onSkipClicked());
-
         }
     }
 
@@ -154,7 +182,7 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         });
 
 
-        surveyBody.setupBodyView(inflater, container);
+        surveyBody.setupBodyView(inflater, this);
         this.stepBody = surveyBody;
 
     }
@@ -174,37 +202,6 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         }
     }
 
-//    private void setupBody(int viewType, LayoutInflater inflater, ViewGroup parent) {
-//
-//    }
-
-    /**
-     * Method allowing a step to consume a back event.
-     *
-     * @return
-     */
-    @Override
-    public boolean isBackEventConsumed()
-    {
-        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepBody().getStepResult(false));
-        return false;
-    }
-
-    @Override
-    public void setCallbacks(StepCallbacks callbacks)
-    {
-        this.callbacks = callbacks;
-    }
-
-    @Override
-    public int getContentResourceId()
-    {
-        return R.layout.rsx_single_image_classification_survey_layout;
-    }
-
-
-
-
     @Override
     public Parcelable onSaveInstanceState()
     {
@@ -212,7 +209,6 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         return super.onSaveInstanceState();
     }
 
-    @Override
     protected void onNextClicked()
     {
         BodyAnswer bodyAnswer = this.getStepBody().getBodyAnswerState();
@@ -233,7 +229,6 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         }
     }
 
-    @Override
     public void onSkipClicked()
     {
         if(callbacks != null)
@@ -245,14 +240,9 @@ public class RSXSingleImageClassificationSurveyLayout extends SurveyStepLayout {
         }
     }
 
-    @Override
     public String getString(@StringRes int stringResId)
     {
         return getResources().getString(stringResId);
     }
-
-
-
-
 
 }

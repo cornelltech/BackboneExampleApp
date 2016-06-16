@@ -1,5 +1,6 @@
 package edu.cornell.tech.foundry.sdl_rsx.ui;
 
+import edu.cornell.tech.foundry.sdl_rsx.choice.RSXTextChoiceWithColor;
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
 
 import org.researchstack.backboneapp.R;
@@ -115,14 +116,14 @@ public class RSXSingleImageClassificationSurveyBody <T> implements StepBody {
     {
 
 //        LinearLayout buttonLayout = new LinearLayout(parent.getContext());
-        LinearLayout buttonLayout = (LinearLayout) parent.findViewById(R.id.rsx_single_image_classification_button_container_view);
+        LinearLayout buttonLayout = (LinearLayout) parent.findViewById(R.id.button_container_view);
         buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         //remove all previous buttons
         buttonLayout.removeAllViews();
 
         for(int i=0; i<choices.length; i++) {
-            Choice choice = choices[i];
+            RSXTextChoiceWithColor choice = (RSXTextChoiceWithColor) choices[i];
             Button button = new AppCompatButton(parent.getContext());
             button.setText(choice.getText());
             button.setId(i);
@@ -133,7 +134,13 @@ public class RSXSingleImageClassificationSurveyBody <T> implements StepBody {
 
             button.setLayoutParams(layoutParams);
 
-
+            button.setBackgroundColor(parent.getResources().getColor(android.R.color.transparent));
+            if(choice.getColor() != 0) {
+                button.setTextColor(choice.getColor());
+            }
+            else {
+                button.setTextColor(parent.getResources().getColor(R.color.colorPrimary));
+            }
 
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {

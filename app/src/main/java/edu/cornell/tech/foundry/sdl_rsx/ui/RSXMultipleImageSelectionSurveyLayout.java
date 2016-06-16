@@ -150,6 +150,7 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
                 somethingSelectedButtonPressed();
             }
         });
+
         this.somethingSelectedButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         if (options.getSomethingSelectedButtonColor() != 0) {
             this.somethingSelectedButton.setTextColor(options.getSomethingSelectedButtonColor());
