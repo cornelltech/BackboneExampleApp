@@ -3,6 +3,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.Set;
+
 
 public class AppPrefs
 {
@@ -11,6 +13,8 @@ public class AppPrefs
     public static final String CONSENT_SIGNATURE = "CONSENT_SIGNATURE";
     public static final String HAS_SURVEYED      = "HAS_SURVEYED";
     public static final String SURVEY_RESULT     = "SURVEY_RESULT";
+    public static final String YADL_ACTIVITIES      = "YADL_ACTIVITIES";
+
 
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Statics
@@ -54,5 +58,14 @@ public class AppPrefs
     public void setHasSurveyed(boolean surveyed)
     {
         prefs.edit().putBoolean(HAS_SURVEYED, surveyed).apply();
+    }
+
+    public Set<String> getYADLActivities()
+    {
+        return prefs.getStringSet(YADL_ACTIVITIES, null);
+    }
+
+    public void setYADLActivities(Set<String> activities) {
+        prefs.edit().putStringSet(YADL_ACTIVITIES, activities).apply();
     }
 }

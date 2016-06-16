@@ -56,7 +56,9 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLFullAssessmentTask;
@@ -69,6 +71,8 @@ import com.google.gson.GsonBuilder;
 
 public class MainActivity extends PinCodeActivity
 {
+
+    public static final String PREFS_NAME = "MyPrefsFile";
 
     private static final String LOG_TAG = "SDL-RSX";
 
@@ -292,11 +296,11 @@ public class MainActivity extends PinCodeActivity
         }
         else if(requestCode == REQUEST_YADL_FULL && resultCode == RESULT_OK) {
             Log.i(LOG_TAG, "YADL FULL FINISHED");
-            processSurveyResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
+
+            processYADLFullResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
         }
         else if(requestCode == REQUEST_YADL_SPOT && resultCode == RESULT_OK) {
             Log.i(LOG_TAG, "YADL SPOT FINISHED");
-            processSurveyResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
         }
     }
 
@@ -503,14 +507,35 @@ public class MainActivity extends PinCodeActivity
     private void processSurveyResult(TaskResult result)
     {
         StorageAccess.getInstance().getAppDatabase().saveTaskResult(result);
-
         AppPrefs prefs = AppPrefs.getInstance(this);
         prefs.setHasSurveyed(true);
         initViews();
     }
 
+
+
     private void processYADLFullResult(TaskResult result)
     {
+        StorageAccess.getInstance().getAppDatabase().saveTaskResult(result);
+
+        Set<String> activities = new HashSet<String>();
+        for(String id : result.getResults().keySet())
+        {
+            StepResult stepResult = result.getStepResult(id);
+            if (stepResult != null && stepResult.getResults() != null && stepResult.getResults().get("answer") != null) {
+                String answer = (String) stepResult.getResults().get("answer");
+                if (answer.equals("hard") || answer.equals("moderate" )) {
+                    activities.add(id);
+                }
+            }
+        }
+
+        AppPrefs prefs = AppPrefs.getInstance(this);
+        prefs.setYADLActivities(activities);
+
+
+//        Log.i(LOG_TAG, result);
+
 
     }
 
@@ -637,7 +662,11 @@ public class MainActivity extends PinCodeActivity
     {
         Log.i(LOG_TAG, "Launching YADL Spot Assessment");
 
-        OrderedTask task = YADLSpotAssessmentTask.create(YADL_SPOT_ASSESSMENT, "yadl", this);
+        AppPrefs prefs = AppPrefs.getInstance(this);
+
+        Set<String> selectedActivies = prefs.getYADLActivities();
+
+        OrderedTask task = YADLSpotAssessmentTask.create(YADL_SPOT_ASSESSMENT, "yadl", this, selectedActivies);
 
         // Create an activity using the task and set a delegate.
         Intent intent = ViewTaskActivity.newIntent(this, task);

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import edu.cornell.tech.foundry.sdl_rsx.answerformat.RSXImageChoiceAnswerFormat;
 import edu.cornell.tech.foundry.sdl_rsx.choice.RSXImageChoice;
@@ -33,7 +34,7 @@ public class YADLSpotAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
         super(identifier, options, steps);
     }
 
-    public static YADLSpotAssessmentTask create(String identifier, YADLSpotAssessment assessment, List<String> activityIdentifiers) {
+    public static YADLSpotAssessmentTask create(String identifier, YADLSpotAssessment assessment, Set<String> activityIdentifiers) {
         List<Step> steps = new ArrayList<>();
 
         if (assessment.getItems().isEmpty()) {
@@ -80,7 +81,7 @@ public class YADLSpotAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
     }
 
     //context contains the resources for the config file as well as images
-    public static YADLSpotAssessmentTask create(String identifier,  String propertiesFileName, Context context, List<String> activityIdentifiers) {
+    public static YADLSpotAssessmentTask create(String identifier,  String propertiesFileName, Context context, Set<String> activityIdentifiers) {
 
         Resources r = context.getResources();
 
