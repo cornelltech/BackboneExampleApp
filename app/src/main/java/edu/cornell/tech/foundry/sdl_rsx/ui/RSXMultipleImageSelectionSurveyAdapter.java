@@ -42,6 +42,7 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
             RSXMultipleImageSelectionSurveyStep step,
             StepResult<T[]> result,
             boolean supportsMultipleSelection) {
+        super();
         this.step = step;
 //        this.result = result;
 //        this.imageChoices = choices;
@@ -138,16 +139,17 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
                     false
             );
 
-            int parentWidth = parent.getLayoutParams().width;
-            int itemsPerRow = this.step.getOptions().getItemsPerRow();
-            int itemMinSpacing = this.step.getOptions().getItemMinSpacing();
-            int cellWidth = (parentWidth - (itemsPerRow + 1)*itemMinSpacing) / itemsPerRow;
-            cell.setLayoutParams(new ViewGroup.LayoutParams(cellWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            int parentWidth = parent.getWidth();
+//            int itemsPerRow = this.step.getOptions().getItemsPerRow();
+//            int itemMinSpacing = this.step.getOptions().getItemMinSpacing();
+//            int cellWidth = (parentWidth - (itemsPerRow + 1)*itemMinSpacing) / itemsPerRow;
+//            cell.setLayoutParams(new ViewGroup.LayoutParams(cellWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            cell.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//
         }
         else {
             cell = (LinearLayout) convertView;
         }
-
 
         return this.configureCellForImageChoice(cell, this.imageChoices[position], parent);
     }

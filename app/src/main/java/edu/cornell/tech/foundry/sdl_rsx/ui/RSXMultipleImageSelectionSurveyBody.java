@@ -83,50 +83,14 @@ abstract public class RSXMultipleImageSelectionSurveyBody <T> implements StepBod
             this.imagesGridView.setBackgroundColor(options.getItemCollectionViewBackgroundColor());
         }
 
+        this.imagesGridView.setVisibility(View.VISIBLE);
+
         this.collectionAdapter.setInflater(inflater);
 
         this.imagesGridView.setAdapter(this.collectionAdapter);
         //set on click listener
         this.imagesGridView.setOnItemClickListener(this.collectionAdapter.getOnItemClickListener(this.onSelectionListener));
         this.collectionAdapter.notifyDataSetChanged();
-
-
-//        private int itemCellSelectedColor;
-//        private String itemCellSelectedOverlayImage;
-//        private int itemCellTextBackgroundColor;
-//        private int itemsPerRow;
-//        private int itemMinSpacing;
-
-
-
-//        for(int i=0; i<choices.length; i++) {
-//            Choice choice = choices[i];
-//            Button button = new AppCompatButton(parent.getContext());
-//            button.setText(choice.getText());
-//            button.setId(i);
-//            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-//                    0,
-//                    LinearLayout.LayoutParams.WRAP_CONTENT,
-//                    1.0f);
-//
-//            button.setLayoutParams(layoutParams);
-//
-//
-//
-//            button.setOnClickListener(new View.OnClickListener() {
-//                public void onClick(View v) {
-//                    // Perform action on click
-//                    int i = v.getId();
-//                    Choice<T> choice = choices[i];
-//                    currentSelected = choice.getValue();
-//                    onSelection();
-//                }
-//            });
-//
-//            buttonLayout.addView(button, i);
-//        }
-
-
 
         return this.imagesGridView;
     }
