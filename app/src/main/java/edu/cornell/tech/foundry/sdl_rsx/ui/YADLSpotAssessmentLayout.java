@@ -33,7 +33,7 @@ public class YADLSpotAssessmentLayout extends RSXMultipleImageSelectionSurveyLay
 
     @Override
     protected String getSomethingSelectedButtonText() {
-        Set<?> selectedAnswers = ((RSXMultipleImageSelectionSurveyBody)this.getStepBody()).getCurrentSelected();
+        Set<?> selectedAnswers = this.getCurrentSelected();
         if (selectedAnswers != null) {
             return String.format("Submit (%s)", selectedAnswers.size());
         }
@@ -50,6 +50,10 @@ public class YADLSpotAssessmentLayout extends RSXMultipleImageSelectionSurveyLay
     }
     protected void nothingSelectedButtonPressed() {
         this.onNextClicked();
+    }
+
+    protected boolean supportsMultipleSelection() {
+        return true;
     }
 
 

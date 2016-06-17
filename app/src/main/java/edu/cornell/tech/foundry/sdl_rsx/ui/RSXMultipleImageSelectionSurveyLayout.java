@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,6 +41,11 @@ import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyS
  */
 abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout implements StepLayout {
 
+    public interface OnSelectionListener {
+
+        public void onSelection();
+
+    }
 
     public static final String TAG = RSXMultipleImageSelectionSurveyLayout.class.getSimpleName();
 
@@ -47,8 +53,8 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Data used to initializeLayout and return
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    //This is also declared private by superclass, but no getter has been defined
-    private QuestionStep questionStep;
+    private StepResult   stepResult;
+    private RSXMultipleImageSelectionSurveyStep step;
 
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Communicate w/ host
@@ -59,19 +65,23 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     // Child Views
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 //    private LinearLayout container;
-    private RSXMultipleImageSelectionSurveyBody stepBody;
+//    private RSXMultipleImageSelectionSurveyBody stepBody;
     private Button somethingSelectedButton;
     private Button nothingSelectedButton;
+
+    private RSXMultipleImageSelectionSurveyAdapter collectionAdapter;
+    private GridView imagesGridView;
+
 
     //Getters and Setters
     public Step getStep()
     {
-        return this.questionStep;
+        return this.step;
     }
 
 
 
-    public StepBody getStepBody() { return this.stepBody; }
+//    public StepBody getStepBody() { return this.stepBody; }
 
     //Constructors
     public RSXMultipleImageSelectionSurveyLayout(Context context)
@@ -98,7 +108,8 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
             throw new RuntimeException("Step being used in RSXMultipleImageSelectionSurveyStep is not a RSXMultipleImageSelectionSurveyStep");
         }
 
-        this.questionStep = (QuestionStep) step;
+        this.step = (RSXMultipleImageSelectionSurveyStep) step;
+        this.stepResult = result == null ? new StepResult<>(step) : result;
         this.initializeStep((RSXMultipleImageSelectionSurveyStep) step, result);
     }
 
@@ -111,7 +122,7 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     @Override
     public boolean isBackEventConsumed()
     {
-        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepBody().getStepResult(false));
+        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepResult(false));
         return false;
     }
 
@@ -126,7 +137,7 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     public void initializeStep(RSXMultipleImageSelectionSurveyStep step, StepResult result)
     {
         this.initStepLayout(step);
-        this.initStepBody(step, result);
+//        this.initStepBody(step, result);
         this.updateUI();
     }
 
@@ -184,13 +195,42 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
                 questionTextView.setText(questionText);
             }
 
+//            RSXMultipleImageSelectionSurveyOptions options = this.step.getOptions();
+
+            this.imagesGridView = (GridView) findViewById(R.id.images_grid_view);
+
+            this.collectionAdapter = new RSXMultipleImageSelectionSurveyAdapter(
+                    this.step,
+                    this.stepResult,
+                    this.supportsMultipleSelection());
+
+            if (options.getItemCollectionViewBackgroundColor() != 0) {
+                this.imagesGridView.setBackgroundColor(options.getItemCollectionViewBackgroundColor());
+            }
+
+            this.imagesGridView.setVisibility(View.VISIBLE);
+
+            this.collectionAdapter.setInflater(inflater);
+
+            this.imagesGridView.setAdapter(this.collectionAdapter);
+            //set on click listener
+            RSXMultipleImageSelectionSurveyLayout self = this;
+            this.imagesGridView.setOnItemClickListener(this.collectionAdapter.getOnItemClickListener(new OnSelectionListener() {
+                public void onSelection() {
+                    self.onSelection();
+                }
+            }));
+
+            this.collectionAdapter.notifyDataSetChanged();
+
+
         }
 
     }
 
     private void updateUI() {
 
-        Set<?> selectedAnswers = ((RSXMultipleImageSelectionSurveyBody)this.getStepBody()).getCurrentSelected();
+        Set<?> selectedAnswers = this.getCurrentSelected();
         if (selectedAnswers != null) {
             this.somethingSelectedButton.setText(this.getSomethingSelectedButtonText());
             this.nothingSelectedButton.setText(this.getNothingSelectedButtonText());
@@ -199,8 +239,8 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
             this.nothingSelectedButton.setVisibility((selectedAnswers.size() > 0) ? View.INVISIBLE : View.VISIBLE);
         }
 
-        RSXMultipleImageSelectionSurveyBody body = (RSXMultipleImageSelectionSurveyBody)this.getStepBody();
-        body.updateUI();
+//        RSXMultipleImageSelectionSurveyBody body = (RSXMultipleImageSelectionSurveyBody)this.getStepBody();
+//        body.updateUI();
 
     }
 
@@ -213,56 +253,56 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
         }
     }
 
-    @NonNull
-    private RSXMultipleImageSelectionSurveyBody createStepBody(QuestionStep questionStep, StepResult result)
-    {
-        try
-        {
-            Class cls = questionStep.getStepBodyClass();
-            Constructor constructor = cls.getConstructor(Step.class, StepResult.class);
-            RSXMultipleImageSelectionSurveyLayout self = this;
-            return (RSXMultipleImageSelectionSurveyBody) constructor.newInstance(questionStep, result);
-        }
-        catch(Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void initStepBody(RSXMultipleImageSelectionSurveyStep step, StepResult result)
-    {
-
-        LogExt.i(getClass(), "initStepBody()");
-
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        RSXMultipleImageSelectionSurveyLayout self = this;
-        RSXMultipleImageSelectionSurveyBody surveyBody = createStepBody(questionStep, result);
-        surveyBody.setOnSelectionListener( new RSXMultipleImageSelectionSurveyBody.OnSelectionListener() {
-            public void onSelection() {
-                self.onSelection();
-            }
-        });
-
-        surveyBody.setupBodyView(inflater, this);
-        this.stepBody = surveyBody;
-
-
-
-//        View body = stepBody.getBodyView(StepBody.VIEW_TYPE_DEFAULT, inflater, this);
-
-//        if(body != null)
+//    @NonNull
+//    private RSXMultipleImageSelectionSurveyBody createStepBody(QuestionStep questionStep, StepResult result)
+//    {
+//        try
 //        {
-//            View oldView = container .findViewById(org.researchstack.backbone.R.id.rsx_single_image_classification_button_container_view);
-//            int bodyIndex = container.indexOfChild(oldView);
-//            container.removeView(oldView);
-//            container.addView(body, bodyIndex);
-//            body.setId(org.researchstack.backbone.R.id.rsb_survey_step_body);
+//            Class cls = questionStep.getStepBodyClass();
+//            Constructor constructor = cls.getConstructor(Step.class, StepResult.class);
+//            RSXMultipleImageSelectionSurveyLayout self = this;
+//            return (RSXMultipleImageSelectionSurveyBody) constructor.newInstance(questionStep, result);
 //        }
-    }
+//        catch(Exception e)
+//        {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+//    public void initStepBody(RSXMultipleImageSelectionSurveyStep step, StepResult result)
+//    {
+//
+//        LogExt.i(getClass(), "initStepBody()");
+//
+//        LayoutInflater inflater = LayoutInflater.from(getContext());
+//        RSXMultipleImageSelectionSurveyLayout self = this;
+//        RSXMultipleImageSelectionSurveyBody surveyBody = createStepBody(questionStep, result);
+//        surveyBody.setOnSelectionListener( new RSXMultipleImageSelectionSurveyBody.OnSelectionListener() {
+//            public void onSelection() {
+//                self.onSelection();
+//            }
+//        });
+//
+//        surveyBody.setupBodyView(inflater, this);
+//        this.stepBody = surveyBody;
+//
+//
+//
+////        View body = stepBody.getBodyView(StepBody.VIEW_TYPE_DEFAULT, inflater, this);
+//
+////        if(body != null)
+////        {
+////            View oldView = container .findViewById(org.researchstack.backbone.R.id.rsx_single_image_classification_button_container_view);
+////            int bodyIndex = container.indexOfChild(oldView);
+////            container.removeView(oldView);
+////            container.addView(body, bodyIndex);
+////            body.setId(org.researchstack.backbone.R.id.rsb_survey_step_body);
+////        }
+//    }
 
 
     public String getQuestionText() {
-        return this.questionStep.getTitle();
+        return this.step.getTitle();
     }
 
     public String getAdditionalText() {
@@ -285,40 +325,27 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     @Override
     public Parcelable onSaveInstanceState()
     {
-        callbacks.onSaveStep(StepCallbacks.ACTION_NONE, getStep(), this.getStepBody().getStepResult(false));
+        callbacks.onSaveStep(StepCallbacks.ACTION_NONE, getStep(), this.getStepResult(false));
         return super.onSaveInstanceState();
     }
 
     protected void onNextClicked()
     {
-        BodyAnswer bodyAnswer = this.getStepBody().getBodyAnswerState();
-
-        if(bodyAnswer == null || ! bodyAnswer.isValid())
-        {
-            Toast.makeText(getContext(),
-                    bodyAnswer == null
-                            ? BodyAnswer.INVALID.getString(getContext())
-                            : bodyAnswer.getString(getContext()),
-                    Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
-                    this.getStep(),
-                    this.getStepBody().getStepResult(false));
-        }
+        callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
+                this.getStep(),
+                this.getStepResult(false));
     }
 
-    public void onSkipClicked()
-    {
-        if(callbacks != null)
-        {
-            // empty step result when skipped
-            callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
-                    this.getStep(),
-                    this.getStepBody().getStepResult(true));
-        }
-    }
+//    public void onSkipClicked()
+//    {
+//        if(callbacks != null)
+//        {
+//            // empty step result when skipped
+//            callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
+//                    this.getStep(),
+//                    this.getStepResult(true));
+//        }
+//    }
 
     public String getString(@StringRes int stringResId)
     {
@@ -331,11 +358,31 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     abstract protected void somethingSelectedButtonPressed();
     abstract protected void nothingSelectedButtonPressed();
 
+    abstract protected boolean supportsMultipleSelection();
+
     protected int getAdditionalTextViewHeight() {
         return 0;
     }
 
     protected String getAdditionalTextViewText() {
         return null;
+    }
+
+    public StepResult getStepResult(boolean skipped)
+    {
+        if(skipped)
+        {
+            this.collectionAdapter.clearCurrentSelected();
+            stepResult.setResult( this.collectionAdapter.getCurrentSelected().toArray());
+        }
+        else
+        {
+            stepResult.setResult( this.collectionAdapter.getCurrentSelected().toArray());
+        }
+        return stepResult;
+    }
+
+    protected Set<?> getCurrentSelected() {
+        return this.collectionAdapter.getCurrentSelected();
     }
 }

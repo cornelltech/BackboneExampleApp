@@ -35,8 +35,6 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
     private boolean supportsMultipleSelection;
     private LayoutInflater inflater;
     private int cellWidth;
-//    private StepResult<T[]> result;
-//    private Context mContext;
 
     public RSXMultipleImageSelectionSurveyAdapter(
             RSXMultipleImageSelectionSurveyStep step,
@@ -44,9 +42,6 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
             boolean supportsMultipleSelection) {
         super();
         this.step = step;
-//        this.result = result;
-//        this.imageChoices = choices;
-//        this.mContext = c;
 
         this.supportsMultipleSelection = supportsMultipleSelection;
         // Restore results
@@ -80,13 +75,6 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
     }
 
     protected LinearLayout configureCellForImageChoice(LinearLayout missCell, RSXImageChoice<T> imageChoice, ViewGroup parent) {
-
-//        missCell.activityImage = imageChoice.normalStateImage
-//        missCell.selected = self.getSelectedForValue(imageChoice.value)!
-//                missCell.selectedBackgroundColor = self.itemCellSelectedColor
-//        missCell.selectedOverlayImage = self.itemCellSelectedOverlayImage
-//        missCell.textStackViewBackgroundColor = self.itemCellTextBackgroundColor
-
 
         ImageView itemImageView = (ImageView) missCell.findViewById(R.id.item_image_view);
         ImageView checkImageView = (ImageView) missCell.findViewById(R.id.check_image_view);
@@ -139,13 +127,6 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
                     false
             );
 
-//            int parentWidth = parent.getWidth();
-//            int itemsPerRow = this.step.getOptions().getItemsPerRow();
-//            int itemMinSpacing = this.step.getOptions().getItemMinSpacing();
-//            int cellWidth = (parentWidth - (itemsPerRow + 1)*itemMinSpacing) / itemsPerRow;
-//            cell.setLayoutParams(new ViewGroup.LayoutParams(cellWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-//            cell.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//
         }
         else {
             cell = (LinearLayout) convertView;
@@ -163,7 +144,7 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
     }
 
     //click listener
-    public AdapterView.OnItemClickListener getOnItemClickListener(RSXMultipleImageSelectionSurveyBody.OnSelectionListener<T> listener) {
+    public AdapterView.OnItemClickListener getOnItemClickListener(RSXMultipleImageSelectionSurveyLayout.OnSelectionListener listener) {
 
         return new AdapterView.OnItemClickListener() {
             public void onItemClick(

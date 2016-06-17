@@ -12,13 +12,11 @@ import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import org.researchstack.backbone.answerformat.ChoiceAnswerFormat;
@@ -33,8 +31,6 @@ import org.researchstack.backbone.step.QuestionStep;
 import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.callbacks.StepCallbacks;
 
-import java.lang.reflect.Constructor;
-
 /**
  * Created by jk on 5/26/16.
  */
@@ -48,7 +44,7 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
     // Data used to initializeLayout and return
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     private StepResult   stepResult;
-    private QuestionStep questionStep;
+    private RSXSingleImageClassificationSurveyStep step;
 
 
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -62,7 +58,7 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
     //Getters and Setters
     public Step getStep()
     {
-        return this.questionStep;
+        return this.step;
     }
 
 
@@ -92,10 +88,8 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
             throw new RuntimeException("Step being used in RSXSingleImageClassificationSurveyLayout is not a RSXSingleImageClassificationSurveyStep");
         }
 
-        this.questionStep = (QuestionStep) step;
+        this.step = (RSXSingleImageClassificationSurveyStep) step;
         this.stepResult = result == null ? new StepResult<>(step) : result;
-
-
 
         this.initializeStep((RSXSingleImageClassificationSurveyStep) step, result);
     }
@@ -136,7 +130,6 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
         TextView questionTextView = (TextView) findViewById(R.id.question_text_view);
 
         Button skipButton = (Button) findViewById(R.id.skip_button);
-//        this.skipButton = (Button) findViewById(R.id.skip_button);
         skipButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onSkipClicked();

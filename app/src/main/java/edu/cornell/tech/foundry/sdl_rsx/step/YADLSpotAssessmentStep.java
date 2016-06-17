@@ -3,7 +3,6 @@ package edu.cornell.tech.foundry.sdl_rsx.step;
 import org.researchstack.backbone.answerformat.AnswerFormat;
 
 import edu.cornell.tech.foundry.sdl_rsx.model.RSXMultipleImageSelectionSurveyOptions;
-import edu.cornell.tech.foundry.sdl_rsx.ui.YADLSpotAssessmentBody;
 import edu.cornell.tech.foundry.sdl_rsx.ui.YADLSpotAssessmentLayout;
 
 /**
@@ -20,7 +19,7 @@ public class YADLSpotAssessmentStep extends RSXMultipleImageSelectionSurveyStep 
     @Override
     public Class<?> getStepBodyClass()
     {
-        return YADLSpotAssessmentBody.class;
+        return null;
     }
 
     public YADLSpotAssessmentStep(
