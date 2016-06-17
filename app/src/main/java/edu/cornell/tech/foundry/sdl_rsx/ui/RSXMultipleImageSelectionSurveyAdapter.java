@@ -32,18 +32,13 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
     private Set<T> currentSelected;
     private RSXImageChoice[] imageChoices;
     private RSXMultipleImageSelectionSurveyStep step;
-    private boolean supportsMultipleSelection;
-    private LayoutInflater inflater;
     private int cellWidth;
 
     public RSXMultipleImageSelectionSurveyAdapter(
             RSXMultipleImageSelectionSurveyStep step,
-            StepResult<T[]> result,
-            boolean supportsMultipleSelection) {
+            StepResult<T[]> result) {
         super();
         this.step = step;
-
-        this.supportsMultipleSelection = supportsMultipleSelection;
         // Restore results
         currentSelected = new HashSet<>();
 
@@ -115,18 +110,13 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         LinearLayout cell;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (convertView == null) {
-            assert(this.inflater != null);
-            if (this.inflater == null) {
-                return null;
-            }
-
-            cell = (LinearLayout) this.inflater.inflate(
+            cell = (LinearLayout) inflater.inflate(
                     R.layout.rsx_multiple_image_selection_survey_cell,
                     parent,
                     false
             );
-
         }
         else {
             cell = (LinearLayout) convertView;
@@ -143,40 +133,7 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
         this.currentSelected.clear();
     }
 
-    //click listener
-    public AdapterView.OnItemClickListener getOnItemClickListener(RSXMultipleImageSelectionSurveyLayout.OnSelectionListener listener) {
-
-        return new AdapterView.OnItemClickListener() {
-            public void onItemClick(
-                    AdapterView<?> parent,
-                    View v,
-                    int position,
-                    long id) {
-
-                RSXImageChoice imageChoice = (RSXImageChoice) parent.getItemAtPosition(position);
-
-                RSXMultipleImageSelectionSurveyAdapter adapter = (RSXMultipleImageSelectionSurveyAdapter) parent.getAdapter();
-                if (adapter.supportsMultipleSelection) {
-                    adapter.setSelectedForValue(imageChoice.getValue(), !adapter.getSelectedForValue(imageChoice.getValue()));
-                }
-                else {
-                    //multiple selections not allowed
-                    boolean currentSelectionSetting = adapter.getSelectedForValue(imageChoice.getValue());
-                    adapter.clearCurrentSelected();
-                    adapter.setSelectedForValue(imageChoice.getValue(), !currentSelectionSetting);
-                }
-
-                if (listener != null) {
-                    listener.onSelection();
-                }
-
-                adapter.notifyDataSetChanged();
-
-            }
-        };
-    }
-
-    private void setSelectedForValue(T value, boolean selected) {
+    public void setSelectedForValue(T value, boolean selected) {
         //add or remove from hash based on selected
         if (selected) {
             this.currentSelected.add(value);
@@ -186,12 +143,8 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
         }
     }
 
-    private boolean getSelectedForValue(T value) {
+    public boolean getSelectedForValue(T value) {
         return this.currentSelected.contains(value);
-    }
-
-    public void setInflater(LayoutInflater i) {
-        this.inflater = i;
     }
 
 }
