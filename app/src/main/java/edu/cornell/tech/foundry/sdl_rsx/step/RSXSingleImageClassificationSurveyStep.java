@@ -1,7 +1,5 @@
 package edu.cornell.tech.foundry.sdl_rsx.step;
 
-import android.graphics.Bitmap;
-
 import org.researchstack.backbone.step.FormStep;
 import org.researchstack.backbone.step.QuestionStep;
 import org.researchstack.backbone.answerformat.AnswerFormat;
@@ -9,8 +7,6 @@ import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.step.layout.SurveyStepLayout;
 
 import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyLayout;
-import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyBody;
-import edu.cornell.tech.foundry.sdl_rsx.utils.ImageDescriptor;
 
 /**
  * Created by jk on 5/26/16.
@@ -43,11 +39,11 @@ public class RSXSingleImageClassificationSurveyStep extends QuestionStep {
         return RSXSingleImageClassificationSurveyLayout.class;
     }
 
-    @Override
-    public Class<?> getStepBodyClass()
-    {
-        return RSXSingleImageClassificationSurveyBody.class;
-    }
+//    @Override
+//    public Class<?> getStepBodyClass()
+//    {
+//        return RSXSingleImageClassificationSurveyBody.class;
+//    }
     /**
      * The base64-encoded image.
      */

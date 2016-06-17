@@ -1,5 +1,6 @@
 package edu.cornell.tech.foundry.sdl_rsx.ui;
 
+import edu.cornell.tech.foundry.sdl_rsx.choice.RSXTextChoiceWithColor;
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
 
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import org.researchstack.backbone.ui.step.body.BodyAnswer;
+import org.researchstack.backbone.answerformat.ChoiceAnswerFormat;
+import org.researchstack.backbone.model.Choice;
 import org.researchstack.backbone.ui.step.layout.StepLayout;
-import org.researchstack.backbone.utils.LogExt;
 import org.researchstack.backbone.utils.ResUtils;
 import org.researchstack.backbone.utils.TextUtils;
 import org.researchstack.backboneapp.R;
@@ -30,9 +32,6 @@ import org.researchstack.backbone.result.StepResult;
 import org.researchstack.backbone.step.QuestionStep;
 import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.callbacks.StepCallbacks;
-import org.researchstack.backbone.ui.step.body.StepBody;
-import org.researchstack.backbone.ui.step.layout.SurveyStepLayout;
-import org.researchstack.backbone.ui.views.SubmitBar;
 
 import java.lang.reflect.Constructor;
 
@@ -48,34 +47,24 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Data used to initializeLayout and return
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    //This is also declared private by superclass, but no getter has been defined
-    //probably shoudl remove this
-//    private StepResult   stepResult;
-    //need to keep this
+    private StepResult   stepResult;
     private QuestionStep questionStep;
+
 
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Communicate w/ host
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     private StepCallbacks callbacks;
 
-    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    // Child Views
-    //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//    private LinearLayout container;
-    private StepBody     stepBody;
-
-    private Button skipButton;
-
+    //Result State
+    private Object currentSelected;
 
     //Getters and Setters
-
     public Step getStep()
     {
         return this.questionStep;
     }
 
-    public StepBody getStepBody() { return this.stepBody; }
 
     //Constructors
     public RSXSingleImageClassificationSurveyLayout(Context context)
@@ -104,6 +93,10 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
         }
 
         this.questionStep = (QuestionStep) step;
+        this.stepResult = result == null ? new StepResult<>(step) : result;
+
+
+
         this.initializeStep((RSXSingleImageClassificationSurveyStep) step, result);
     }
 
@@ -115,7 +108,7 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
     @Override
     public boolean isBackEventConsumed()
     {
-        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepBody().getStepResult(false));
+        callbacks.onSaveStep(StepCallbacks.ACTION_PREV, this.getStep(), this.getStepResult(false));
         return false;
     }
 
@@ -130,7 +123,6 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
     public void initializeStep(RSXSingleImageClassificationSurveyStep step, StepResult result)
     {
         this.initStepLayout(step);
-        this.initStepBody(step, result);
     }
 
     public void initStepLayout(RSXSingleImageClassificationSurveyStep step) {
@@ -143,8 +135,9 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
         TextView itemDescriptionTextView = (TextView) findViewById(R.id.item_description_text_view);
         TextView questionTextView = (TextView) findViewById(R.id.question_text_view);
 
-        this.skipButton = (Button) findViewById(R.id.skip_button);
-        this.skipButton.setOnClickListener(new View.OnClickListener() {
+        Button skipButton = (Button) findViewById(R.id.skip_button);
+//        this.skipButton = (Button) findViewById(R.id.skip_button);
+        skipButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onSkipClicked();
             }
@@ -165,68 +158,66 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
                     imageView.setImageResource(resId);
                 }
             }
-        }
-    }
 
-    public void initStepBody(RSXSingleImageClassificationSurveyStep step, StepResult result)
-    {
-        LogExt.i(getClass(), "initStepBody()");
 
-        LayoutInflater inflater = LayoutInflater.from(getContext());
+            LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.button_container_view);
+            buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        RSXSingleImageClassificationSurveyBody surveyBody = new RSXSingleImageClassificationSurveyBody<>(step, result);
-        surveyBody.setOnSelectionListener( new RSXSingleImageClassificationSurveyBody.OnSelectionListener() {
-            public void onSelection(RSXSingleImageClassificationSurveyBody body) {
-                onNextClicked();
+            //remove all previous buttons
+            buttonLayout.removeAllViews();
+
+            ChoiceAnswerFormat format = (ChoiceAnswerFormat) ((RSXSingleImageClassificationSurveyStep)step).getAnswerFormat();
+            Choice<?>[] choices = format.getChoices();
+
+            for(int i=0; i<choices.length; i++) {
+                RSXTextChoiceWithColor choice = (RSXTextChoiceWithColor) choices[i];
+                Button button = new AppCompatButton(getContext());
+                button.setText(choice.getText());
+                button.setId(i);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1.0f);
+
+                button.setLayoutParams(layoutParams);
+
+                button.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                if(choice.getColor() != 0) {
+                    button.setTextColor(choice.getColor());
+                }
+                else {
+                    button.setTextColor(getResources().getColor(R.color.colorPrimary));
+                }
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        // Perform action on click
+                        int i = v.getId();
+                        Choice<?> choice = choices[i];
+                        currentSelected = choice.getValue();
+                        onNextClicked();
+                    }
+                });
+
+                buttonLayout.addView(button, i);
             }
-        });
-
-
-        surveyBody.setupBodyView(inflater, this);
-        this.stepBody = surveyBody;
-
-    }
-
-    @NonNull
-    private StepBody createStepBody(QuestionStep questionStep, StepResult result)
-    {
-        try
-        {
-            Class cls = questionStep.getStepBodyClass();
-            Constructor constructor = cls.getConstructor(Step.class, StepResult.class);
-            return (StepBody) constructor.newInstance(questionStep, result);
-        }
-        catch(Exception e)
-        {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
     public Parcelable onSaveInstanceState()
     {
-        callbacks.onSaveStep(StepCallbacks.ACTION_NONE, getStep(), this.getStepBody().getStepResult(false));
+        callbacks.onSaveStep(StepCallbacks.ACTION_NONE, getStep(), this.getStepResult(false));
         return super.onSaveInstanceState();
     }
 
     protected void onNextClicked()
     {
-        BodyAnswer bodyAnswer = this.getStepBody().getBodyAnswerState();
 
-        if(bodyAnswer == null || ! bodyAnswer.isValid())
-        {
-            Toast.makeText(getContext(),
-                    bodyAnswer == null
-                            ? BodyAnswer.INVALID.getString(getContext())
-                            : bodyAnswer.getString(getContext()),
-                    Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
-                    this.getStep(),
-                    this.getStepBody().getStepResult(false));
-        }
+        callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
+                this.getStep(),
+                this.getStepResult(false));
+
     }
 
     public void onSkipClicked()
@@ -236,13 +227,28 @@ public class RSXSingleImageClassificationSurveyLayout extends FrameLayout implem
             // empty step result when skipped
             callbacks.onSaveStep(StepCallbacks.ACTION_NEXT,
                     this.getStep(),
-                    this.getStepBody().getStepResult(true));
+                    this.getStepResult(true));
         }
     }
 
     public String getString(@StringRes int stringResId)
     {
         return getResources().getString(stringResId);
+    }
+
+
+    public StepResult getStepResult(boolean skipped)
+    {
+        if(skipped)
+        {
+            stepResult.setResult(null);
+        }
+        else
+        {
+            stepResult.setResult(currentSelected);
+        }
+
+        return stepResult;
     }
 
 }

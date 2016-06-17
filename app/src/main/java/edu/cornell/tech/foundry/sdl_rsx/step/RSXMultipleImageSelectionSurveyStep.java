@@ -4,8 +4,6 @@ import org.researchstack.backbone.answerformat.AnswerFormat;
 import org.researchstack.backbone.step.QuestionStep;
 
 import edu.cornell.tech.foundry.sdl_rsx.model.RSXMultipleImageSelectionSurveyOptions;
-import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyBody;
-import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyLayout;
 
 /**
  * Created by jk on 6/1/16.

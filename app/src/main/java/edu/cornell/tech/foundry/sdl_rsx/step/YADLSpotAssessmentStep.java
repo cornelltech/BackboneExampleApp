@@ -3,9 +3,6 @@ package edu.cornell.tech.foundry.sdl_rsx.step;
 import org.researchstack.backbone.answerformat.AnswerFormat;
 
 import edu.cornell.tech.foundry.sdl_rsx.model.RSXMultipleImageSelectionSurveyOptions;
-import edu.cornell.tech.foundry.sdl_rsx.ui.RSXMultipleImageSelectionSurveyLayout;
-import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyBody;
-import edu.cornell.tech.foundry.sdl_rsx.ui.RSXSingleImageClassificationSurveyLayout;
 import edu.cornell.tech.foundry.sdl_rsx.ui.YADLSpotAssessmentBody;
 import edu.cornell.tech.foundry.sdl_rsx.ui.YADLSpotAssessmentLayout;
 
