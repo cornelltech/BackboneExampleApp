@@ -42,7 +42,7 @@ public class YADLSpotAssessmentLayout extends RSXMultipleImageSelectionSurveyLay
         }
     }
     protected String getNothingSelectedButtonText() {
-        return "Nothing reported";
+        return "Nothing To Report";
     }
 
     protected void somethingSelectedButtonPressed() {

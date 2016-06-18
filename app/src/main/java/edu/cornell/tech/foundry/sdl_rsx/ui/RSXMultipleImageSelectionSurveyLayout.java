@@ -170,6 +170,7 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
 
             String additionalText = this.getAdditionalText();
             if (!TextUtils.isEmpty(additionalText) && additionalTextview != null) {
+                additionalTextview.setVisibility(View.VISIBLE);
                 additionalTextview.setText(additionalText);
             }
             else {
@@ -182,6 +183,9 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
             }
 
             GridView imagesGridView = (GridView) findViewById(R.id.images_grid_view);
+            imagesGridView.setNumColumns(options.getItemsPerRow());
+            imagesGridView.setHorizontalSpacing(options.getItemMinSpacing());
+            imagesGridView.setVerticalSpacing(options.getItemMinSpacing());
 
             this.collectionAdapter = new RSXMultipleImageSelectionSurveyAdapter(
                     this.step,
@@ -205,8 +209,8 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
                         long id) {
 
                     RSXImageChoice imageChoice = (RSXImageChoice) parent.getItemAtPosition(position);
-
                     RSXMultipleImageSelectionSurveyAdapter adapter = (RSXMultipleImageSelectionSurveyAdapter) parent.getAdapter();
+
                     if (self.supportsMultipleSelection()) {
                         adapter.setSelectedForValue(imageChoice.getValue(), !adapter.getSelectedForValue(imageChoice.getValue()));
                     }
@@ -216,14 +220,10 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
                         adapter.clearCurrentSelected();
                         adapter.setSelectedForValue(imageChoice.getValue(), !currentSelectionSetting);
                     }
-
                     self.onSelection();
-
                 }
             });
-
             this.collectionAdapter.notifyDataSetChanged();
-
         }
 
     }
@@ -252,11 +252,10 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
         }
     }
 
-    public String getQuestionText() {
+    protected String getQuestionText() {
         return this.step.getTitle();
     }
-
-    public String getAdditionalText() {
+    protected String getAdditionalText() {
         return "";
     }
 
@@ -285,22 +284,6 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
         return getResources().getString(stringResId);
     }
 
-    abstract protected boolean transitionOnSelection();
-    abstract protected String getSomethingSelectedButtonText();
-    abstract protected String getNothingSelectedButtonText();
-    abstract protected void somethingSelectedButtonPressed();
-    abstract protected void nothingSelectedButtonPressed();
-
-    abstract protected boolean supportsMultipleSelection();
-
-    protected int getAdditionalTextViewHeight() {
-        return 0;
-    }
-
-    protected String getAdditionalTextViewText() {
-        return null;
-    }
-
     public StepResult getStepResult(boolean skipped)
     {
         if(skipped)
@@ -318,4 +301,13 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     protected Set<?> getCurrentSelected() {
         return this.collectionAdapter.getCurrentSelected();
     }
+
+
+    //abstracts
+    abstract protected boolean transitionOnSelection();
+    abstract protected String getSomethingSelectedButtonText();
+    abstract protected String getNothingSelectedButtonText();
+    abstract protected void somethingSelectedButtonPressed();
+    abstract protected void nothingSelectedButtonPressed();
+    abstract protected boolean supportsMultipleSelection();
 }
