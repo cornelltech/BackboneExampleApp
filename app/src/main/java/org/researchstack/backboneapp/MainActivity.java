@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
+import edu.cornell.tech.foundry.sdl_rsx.task.PAMTask;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLFullAssessmentTask;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLSpotAssessmentTask;
 import edu.cornell.tech.foundry.sdl_rsx.utils.ImageDescriptor;
@@ -81,6 +82,7 @@ public class MainActivity extends PinCodeActivity
     private static final int REQUEST_SURVEY  = 1;
     private static final int REQUEST_YADL_FULL  = 2;
     private static final int REQUEST_YADL_SPOT  = 3;
+    private static final int REQUEST_PAM  = 4;
 
     // Task/Step Identifiers
     public static final  String FORM_STEP                 = "form_step";
@@ -106,6 +108,7 @@ public class MainActivity extends PinCodeActivity
     public static final  String SAMPLE_SURVEY             = "sample_survey";
     public static final  String YADL_FULL_ASSESSMENT             = "yadl_full_assessment";
     public static final  String YADL_SPOT_ASSESSMENT             = "yadl_spot_assessment";
+    public static final  String PAM_ASSESSMENT             = "pam_assessment";
 
     // Views
     private AppCompatButton consentButton;
@@ -301,6 +304,10 @@ public class MainActivity extends PinCodeActivity
         }
         else if(requestCode == REQUEST_YADL_SPOT && resultCode == RESULT_OK) {
             Log.i(LOG_TAG, "YADL SPOT FINISHED");
+        }
+        else if(requestCode == REQUEST_PAM && resultCode == RESULT_OK) {
+            Log.i(LOG_TAG, "PAM FINISHED");
+            processPAMResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
         }
     }
 
@@ -539,6 +546,11 @@ public class MainActivity extends PinCodeActivity
 
     }
 
+    private void processPAMResult(TaskResult result)
+    {
+        Log.i(LOG_TAG, result.toString());
+    }
+
 //    private void printSurveyInfo(TextView surveyAnswer)
 //    {
 //        TaskResult taskResult = StorageAccess.getInstance()
@@ -688,6 +700,12 @@ public class MainActivity extends PinCodeActivity
     private void launchPAM()
     {
         Log.i(LOG_TAG, "Launching PAM");
+
+        OrderedTask task = PAMTask.create(PAM_ASSESSMENT, "pam", this);
+
+        // Create an activity using the task and set a delegate.
+        Intent intent = ViewTaskActivity.newIntent(this, task);
+        startActivityForResult(intent, REQUEST_PAM);
 
     }
 }

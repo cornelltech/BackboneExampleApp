@@ -9,8 +9,9 @@ import java.util.Random;
 public class PAMImageChoice <T> extends RSXImageChoice {
 
 
-    private List<String> images;
-    public PAMImageChoice(List<String> images, T value) {
+//    private List<String> images;
+    private String[] images;
+    public PAMImageChoice(String[] images, T value) {
 
         super(null, null, null, value, null);
         this.images = images;
@@ -19,10 +20,10 @@ public class PAMImageChoice <T> extends RSXImageChoice {
 
     @Override
     public String getNormalStateImage() {
-        int numberOfImages = this.images.size();
+        int numberOfImages = this.images.length;
         Random rand = new Random();
         int index = rand.nextInt(numberOfImages);
-        return this.images.get(index);
+        return this.images[index];
     }
 
 }

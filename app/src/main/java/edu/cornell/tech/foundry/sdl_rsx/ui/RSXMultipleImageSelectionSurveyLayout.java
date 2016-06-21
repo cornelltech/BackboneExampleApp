@@ -228,7 +228,7 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
 
     }
 
-    private void updateUI() {
+    protected void updateUI() {
 
         Set<?> selectedAnswers = this.getCurrentSelected();
         if (selectedAnswers != null) {

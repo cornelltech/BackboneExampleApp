@@ -57,19 +57,18 @@
         android:id="@+id/images_grid_view"
         android:layout_below="@+id/additional_text_view"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="false"
         android:layout_alignParentRight="true"
         android:layout_above="@+id/something_selected_button"
-        android:layout_marginBottom="10dp"
         android:layout_height="200dp"
         android:layout_alignParentEnd="false"
         android:columnWidth="90dp"
         android:numColumns="auto_fit"
         android:verticalSpacing="10dp"
         android:horizontalSpacing="10dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
-        android:background="@color/accent_material_dark" />
+        android:stretchMode="none"
+        android:gravity="center" />
 
 </RelativeLayout>
