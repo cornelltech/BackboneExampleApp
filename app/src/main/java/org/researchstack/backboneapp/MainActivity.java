@@ -64,7 +64,6 @@ import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyS
 import edu.cornell.tech.foundry.sdl_rsx.task.PAMTask;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLFullAssessmentTask;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLSpotAssessmentTask;
-import edu.cornell.tech.foundry.sdl_rsx.utils.ImageDescriptor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
