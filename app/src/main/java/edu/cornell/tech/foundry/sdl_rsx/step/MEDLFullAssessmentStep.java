@@ -10,6 +10,7 @@ import edu.cornell.tech.foundry.sdl_rsx.ui.MEDLFullAssessmentLayout;
  */
 public class MEDLFullAssessmentStep extends RSXMultipleImageSelectionSurveyStep  {
 
+    private String category;
     @Override
     public Class getStepLayoutClass()
     {
@@ -25,10 +26,16 @@ public class MEDLFullAssessmentStep extends RSXMultipleImageSelectionSurveyStep 
     public MEDLFullAssessmentStep(
             String identifier,
             String title,
+            String category,
             AnswerFormat answerFormat,
             RSXMultipleImageSelectionSurveyOptions options
     )
     {
         super(identifier, title, answerFormat, options);
+        this.category = category;
+    }
+
+    public String getCategory() {
+        return this.category;
     }
 }

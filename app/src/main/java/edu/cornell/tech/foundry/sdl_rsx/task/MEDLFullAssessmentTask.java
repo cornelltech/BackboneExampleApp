@@ -77,7 +77,7 @@ public class MEDLFullAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
 
                 AnswerFormat answerFormat = new RSXImageChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle.MultipleChoice, choices);
 
-                MEDLFullAssessmentStep medlFullStep = new MEDLFullAssessmentStep(category, assessment.getPrompt(), answerFormat, assessment.getOptions());
+                MEDLFullAssessmentStep medlFullStep = new MEDLFullAssessmentStep(category, assessment.getPrompt(), category, answerFormat, assessment.getOptions());
                 steps.add(medlFullStep);
             }
 

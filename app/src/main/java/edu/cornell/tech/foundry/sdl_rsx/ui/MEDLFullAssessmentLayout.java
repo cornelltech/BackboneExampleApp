@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 
 import java.util.Set;
 
+import edu.cornell.tech.foundry.sdl_rsx.step.MEDLFullAssessmentStep;
+
 /**
  * Created by jk on 6/23/16.
  */
@@ -50,4 +52,13 @@ public class MEDLFullAssessmentLayout extends RSXMultipleImageSelectionSurveyLay
         return true;
     }
 
+    @Override
+    public Class<?> getAdaptorClass() {
+        return MEDLAdapter.class;
+    }
+
+    @Override
+    protected String getAdditionalText() {
+        return ((MEDLFullAssessmentStep) this.getStep()).getCategory();
+    }
 }

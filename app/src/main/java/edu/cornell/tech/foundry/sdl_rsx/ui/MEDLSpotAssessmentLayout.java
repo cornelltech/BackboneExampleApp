@@ -54,4 +54,9 @@ public class MEDLSpotAssessmentLayout extends RSXMultipleImageSelectionSurveyLay
     protected boolean supportsMultipleSelection() {
         return true;
     }
+
+    @Override
+    public Class<?> getAdaptorClass() {
+        return MEDLAdapter.class;
+    }
 }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,7 +49,7 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
             currentSelected.addAll(Arrays.asList(resultArray));
         }
 
-        RSXImageChoiceAnswerFormat answerFormat = (RSXImageChoiceAnswerFormat)this.step.getAnswerFormat();
+        RSXImageChoiceAnswerFormat answerFormat = (RSXImageChoiceAnswerFormat)this.getStep().getAnswerFormat();
 
         this.imageChoices = answerFormat.getImageChoices();
     }
@@ -57,6 +58,10 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
     public int getCount() {
         int length = this.imageChoices.length;
         return length;
+    }
+
+    protected RSXMultipleImageSelectionSurveyStep getStep() {
+        return this.step;
     }
 
     @Override
@@ -69,12 +74,11 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
         return position;
     }
 
-    protected LinearLayout configureCellForImageChoice(LinearLayout missCell, RSXImageChoice<T> imageChoice, ViewGroup parent) {
+    protected View configureCellForImageChoice(View missCell, RSXImageChoice<T> imageChoice, ViewGroup parent) {
 
         ImageView itemImageView = (ImageView) missCell.findViewById(R.id.item_image_view);
         ImageView checkImageView = (ImageView) missCell.findViewById(R.id.check_image_view);
-        TextView primaryTextView = (TextView) missCell.findViewById(R.id.primary_text_label);
-        TextView secondaryTextView = (TextView) missCell.findViewById(R.id.secondary_text_label);
+        LinearLayout textContainer = (LinearLayout) missCell.findViewById(R.id.text_container);
 
         int itemResId = ResUtils.getDrawableResourceId(missCell.getContext(), imageChoice.getNormalStateImage());
         if (itemResId != 0) {
@@ -82,12 +86,12 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
         }
         if (this.getSelectedForValue((T) imageChoice.getValue())) {
 
-            if(this.step.getOptions().getItemCellSelectedColor() != 0) {
-                missCell.setBackgroundColor(this.step.getOptions().getItemCellSelectedColor());
+            if(this.getStep().getOptions().getItemCellSelectedColor() != 0) {
+                missCell.setBackgroundColor(this.getStep().getOptions().getItemCellSelectedColor());
             }
 
-            if (!TextUtils.isEmpty( this.step.getOptions().getItemCellSelectedOverlayImageTitle() )) {
-                int checkResId = ResUtils.getDrawableResourceId(missCell.getContext(), this.step.getOptions().getItemCellSelectedOverlayImageTitle());
+            if (!TextUtils.isEmpty( this.getStep().getOptions().getItemCellSelectedOverlayImageTitle() )) {
+                int checkResId = ResUtils.getDrawableResourceId(missCell.getContext(), this.getStep().getOptions().getItemCellSelectedOverlayImageTitle());
 
                 checkImageView.setVisibility(View.VISIBLE);
                 if (checkResId != 0) {
@@ -100,8 +104,7 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
             checkImageView.setVisibility(View.INVISIBLE);
         }
 
-        primaryTextView.setVisibility(View.GONE);
-        secondaryTextView.setVisibility(View.GONE);
+        textContainer.setVisibility(View.GONE);
 
         return missCell;
     }
@@ -109,17 +112,17 @@ public class RSXMultipleImageSelectionSurveyAdapter <T> extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        LinearLayout cell;
+        FrameLayout cell;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (convertView == null) {
-            cell = (LinearLayout) inflater.inflate(
+            cell = (FrameLayout) inflater.inflate(
                     R.layout.rsx_multiple_image_selection_survey_cell,
                     parent,
                     false
             );
         }
         else {
-            cell = (LinearLayout) convertView;
+            cell = (FrameLayout) convertView;
         }
 
         return this.configureCellForImageChoice(cell, this.imageChoices[position], parent);

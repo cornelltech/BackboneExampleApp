@@ -36,7 +36,7 @@ public class PAMTask extends RSXMultipleImageSelectionSurveyTask {
 
     static RSXMultipleImageSelectionSurveyOptions defaultOptions() {
         RSXMultipleImageSelectionSurveyOptions options = new RSXMultipleImageSelectionSurveyOptions();
-        options.setItemMinSpacing(16);
+        options.setItemMinSpacing(0);
         options.setItemsPerRow(4);
         options.setSomethingSelectedButtonColor(R.color.colorPrimary);
         options.setNothingSelectedButtonColor(R.color.colorPrimary);
