@@ -14,6 +14,7 @@ public class AppPrefs
     public static final String HAS_SURVEYED      = "HAS_SURVEYED";
     public static final String SURVEY_RESULT     = "SURVEY_RESULT";
     public static final String YADL_ACTIVITIES      = "YADL_ACTIVITIES";
+    public static final String MEDL_ITEMS      = "MEDL_ITEMS";
 
 
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -67,5 +68,14 @@ public class AppPrefs
 
     public void setYADLActivities(Set<String> activities) {
         prefs.edit().putStringSet(YADL_ACTIVITIES, activities).apply();
+    }
+
+    public Set<String> getMEDLItems()
+    {
+        return prefs.getStringSet(MEDL_ITEMS, null);
+    }
+
+    public void setMEDLItems(Set<String> activities) {
+        prefs.edit().putStringSet(MEDL_ITEMS, activities).apply();
     }
 }
