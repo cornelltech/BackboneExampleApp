@@ -69,6 +69,7 @@ public class MEDLFullAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
             for (Map.Entry<String, List<RSXCopingMechanismItem>> entry : categoryGroups.entrySet())
             {
                 List<RSXImageChoice> choices = new ArrayList();
+                String category = entry.getKey();
                 for(int i=0; i<entry.getValue().size(); i++) {
                     RSXCopingMechanismItem item = entry.getValue().get(i);
                     choices.add(item.getImageChoice());
@@ -76,7 +77,7 @@ public class MEDLFullAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
 
                 AnswerFormat answerFormat = new RSXImageChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle.MultipleChoice, choices);
 
-                MEDLFullAssessmentStep medlFullStep = new MEDLFullAssessmentStep(assessment.getIdentifier(), assessment.getPrompt(), answerFormat, assessment.getOptions());
+                MEDLFullAssessmentStep medlFullStep = new MEDLFullAssessmentStep(category, assessment.getPrompt(), answerFormat, assessment.getOptions());
                 steps.add(medlFullStep);
             }
 
@@ -123,7 +124,7 @@ public class MEDLFullAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
                     byteArrayOutputStream.toString());
             JSONObject typeJSON = completeJSON.getJSONObject("MEDL");
             JSONObject assessmentJSON = typeJSON.getJSONObject("full");
-            JSONArray copingMechanismsJSON = typeJSON.getJSONArray("affects");
+            JSONArray copingMechanismsJSON = typeJSON.getJSONArray("medications");
 
             assessment = new MEDLFullAssessment(assessmentJSON, copingMechanismsJSON);
 

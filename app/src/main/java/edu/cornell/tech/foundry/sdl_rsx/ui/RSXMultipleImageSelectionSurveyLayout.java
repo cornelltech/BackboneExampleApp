@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
 import org.researchstack.backbone.result.StepResult;
 import org.researchstack.backbone.step.QuestionStep;
 import org.researchstack.backbone.step.Step;
@@ -34,6 +35,7 @@ import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import edu.cornell.tech.foundry.sdl_rsx.choice.RSXImageChoice;
+import edu.cornell.tech.foundry.sdl_rsx.model.RSXItem;
 import edu.cornell.tech.foundry.sdl_rsx.model.RSXMultipleImageSelectionSurveyOptions;
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXMultipleImageSelectionSurveyStep;
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
@@ -72,6 +74,9 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
     public Step getStep()
     {
         return this.step;
+    }
+    public Class<?> getAdaptorClass() {
+        return RSXMultipleImageSelectionSurveyAdapter.class;
     }
 
 
@@ -187,9 +192,18 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
             imagesGridView.setHorizontalSpacing(options.getItemMinSpacing());
             imagesGridView.setVerticalSpacing(options.getItemMinSpacing());
 
-            this.collectionAdapter = new RSXMultipleImageSelectionSurveyAdapter(
-                    this.step,
-                    this.stepResult);
+            try {
+                Class cls = this.getAdaptorClass();
+                Constructor constructor = cls.getConstructor(
+                        RSXMultipleImageSelectionSurveyStep.class,
+                        StepResult.class);
+
+                this.collectionAdapter = (RSXMultipleImageSelectionSurveyAdapter)
+                        constructor.newInstance(this.step, this.stepResult);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
 
             if (options.getItemCollectionViewBackgroundColor() != 0) {
                 imagesGridView.setBackgroundColor(options.getItemCollectionViewBackgroundColor());

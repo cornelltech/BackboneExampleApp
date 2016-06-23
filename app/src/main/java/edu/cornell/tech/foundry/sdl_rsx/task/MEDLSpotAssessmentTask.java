@@ -111,15 +111,15 @@ public class MEDLSpotAssessmentTask extends RSXMultipleImageSelectionSurveyTask 
                     byteArrayOutputStream.toString());
             JSONObject typeJSON = completeJSON.getJSONObject("MEDL");
             JSONObject assessmentJSON = typeJSON.getJSONObject("spot");
-            JSONArray activitiesJSON = typeJSON.getJSONArray("activities");
+            JSONArray itemsJSON = typeJSON.getJSONArray("medications");
 
-            assessment = new YADLSpotAssessment(assessmentJSON, activitiesJSON);
+            assessment = new MEDLSpotAssessment(assessmentJSON, itemsJSON);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return YADLSpotAssessmentTask.create(identifier, assessment, activityIdentifiers);
+        return MEDLSpotAssessmentTask.create(identifier, assessment, itemIdentifiers);
 
     }
 

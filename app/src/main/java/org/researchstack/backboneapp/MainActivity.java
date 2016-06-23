@@ -62,6 +62,7 @@ import java.util.Set;
 
 import edu.cornell.tech.foundry.sdl_rsx.step.RSXSingleImageClassificationSurveyStep;
 import edu.cornell.tech.foundry.sdl_rsx.task.MEDLFullAssessmentTask;
+import edu.cornell.tech.foundry.sdl_rsx.task.MEDLSpotAssessmentTask;
 import edu.cornell.tech.foundry.sdl_rsx.task.PAMTask;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLFullAssessmentTask;
 import edu.cornell.tech.foundry.sdl_rsx.task.YADLSpotAssessmentTask;
@@ -313,6 +314,15 @@ public class MainActivity extends PinCodeActivity
             Log.i(LOG_TAG, "PAM FINISHED");
             processPAMResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
         }
+        else if(requestCode == REQUEST_MEDL_FULL && resultCode == RESULT_OK) {
+            Log.i(LOG_TAG, "MEDL FULL FINISHED");
+
+            processMEDLFullResult((TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT));
+        }
+        else if(requestCode == REQUEST_MEDL_SPOT && resultCode == RESULT_OK) {
+            Log.i(LOG_TAG, "MEDL SPOT FINISHED");
+        }
+
     }
 
     // Consent stuff
@@ -555,15 +565,15 @@ public class MainActivity extends PinCodeActivity
         {
             StepResult stepResult = result.getStepResult(id);
             if (stepResult != null && stepResult.getResults() != null && stepResult.getResults().get("answer") != null) {
-                String[] answerItems = (String[]) stepResult.getResults().get("answer");
+                Object[] answerItems = (Object[]) stepResult.getResults().get("answer");
                 for(int i=0; i<answerItems.length; i++) {
-                    items.add(answerItems[i]);
+                    items.add((String)answerItems[i]);
                 }
             }
         }
 
         AppPrefs prefs = AppPrefs.getInstance(this);
-        prefs.setYADLActivities(items);
+        prefs.setMEDLItems(items);
 
     }
 
@@ -720,6 +730,16 @@ public class MainActivity extends PinCodeActivity
 
     private void launchMEDLSpot() {
         Log.i(LOG_TAG, "Launching MEDL Spot Assessment");
+
+        AppPrefs prefs = AppPrefs.getInstance(this);
+
+        Set<String> selectedItems = prefs.getMEDLItems();
+
+        OrderedTask task = MEDLSpotAssessmentTask.create(MEDL_SPOT_ASSESSMENT, "medl", this, selectedItems);
+
+        // Create an activity using the task and set a delegate.
+        Intent intent = ViewTaskActivity.newIntent(this, task);
+        startActivityForResult(intent, REQUEST_MEDL_SPOT);
 
     }
 
