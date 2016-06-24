@@ -7,12 +7,14 @@ import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -192,6 +194,11 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
             imagesGridView.setHorizontalSpacing(options.getItemMinSpacing());
             imagesGridView.setVerticalSpacing(options.getItemMinSpacing());
 
+            FrameLayout imagesGridViewContainer = (FrameLayout) findViewById(R.id.images_grid_view_container);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)imagesGridViewContainer.getLayoutParams();
+            params.setMargins(options.getItemMinSpacing(), options.getItemMinSpacing(), options.getItemMinSpacing(), options.getItemMinSpacing());
+            imagesGridViewContainer.setLayoutParams(params);
+
             try {
                 Class cls = this.getAdaptorClass();
                 Constructor constructor = cls.getConstructor(
@@ -206,9 +213,12 @@ abstract public class RSXMultipleImageSelectionSurveyLayout extends FrameLayout 
             }
 
             if (options.getItemCollectionViewBackgroundColor() != 0) {
-                imagesGridView.setBackgroundColor(options.getItemCollectionViewBackgroundColor());
+                imagesGridViewContainer.setBackgroundColor(options.getItemCollectionViewBackgroundColor());
             }
 
+            imagesGridView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+
+            imagesGridViewContainer.setVisibility(View.VISIBLE);
             imagesGridView.setVisibility(View.VISIBLE);
 
             imagesGridView.setAdapter(this.collectionAdapter);
